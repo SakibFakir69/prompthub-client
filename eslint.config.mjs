@@ -1,10 +1,11 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-
+import eslintConfigPrettier from 'eslint-config-prettier';
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  eslintConfigPrettier,
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -13,6 +14,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules:{
+      "no-console":"warn",
+      "no-used-var":"error"
+      // ONLY USE UPPERCASE COMMENT
+    }
+  }
 ]);
 
 export default eslintConfig;

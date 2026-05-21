@@ -1,10 +1,9 @@
 
-
 import React from 'react'
 
 function LoginPage() {
   return (
-    <div>page</div>
+    <div>LoginPage</div>
   )
 }
 

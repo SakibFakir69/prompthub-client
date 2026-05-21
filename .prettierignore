@@ -1,0 +1,23 @@
+# Ignore artifacts:
+build
+coverage
+
+
+# Build directories
+dist/
+build/
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Lockfiles and system files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.DS_Store
+
+# Minified or auto-generated assets
+*.min.js
+*.min.css

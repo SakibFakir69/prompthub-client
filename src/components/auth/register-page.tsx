@@ -4,12 +4,8 @@ import React from 'react'
 
 function RegisterPage() {
   return (
-    <div>
-        
-
-
-    </div>
+    <div>RegisterPage</div>
   )
 }
 
-export default RegisterPage;
+export default RegisterPage
