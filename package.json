@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ptr-c": "npx prettier . --check",
+    "ptr-w": "npx prettier . --write"
   },
   "dependencies": {
     "@next/env": "^16.1.6",

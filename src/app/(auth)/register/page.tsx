@@ -1,8 +1,5 @@
-
-
-
 function RegisterPage() {
-  return <RegisterPage/>
+  return <RegisterPage />;
 }
 
 export default RegisterPage;
