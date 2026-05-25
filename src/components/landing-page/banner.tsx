@@ -27,7 +27,7 @@ function Banner() {
 
           {/* Main Heading */}
           <h2 className="reveal" style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 800, color: "#fff", letterSpacing: "-0.04em", marginBottom: "1.25rem", lineHeight: 1.05 }}>
-            Don't just use AI.<br />
+            Don t just use AI.<br />
             <span className="gradient-text">Share, collaborate, and monetize your prompts.</span>
           </h2>
 

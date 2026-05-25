@@ -7,7 +7,7 @@ function Hero() {
         <div className="hero-dot-bg" />
 
         {/* Floating Cards — Left */}
-        <div className="floating-card" style={{ left: "2%", top: "20%", "--rot": "-4deg" } as React.CSSProperties & { "--rot": string }}>
+        <div className="floating-card" style={{ left: "2%", top: "25%", "--rot": "-4deg" } as React.CSSProperties & { "--rot": string }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
             <span style={{ fontSize: 20 }}>📸</span>
             <div>
@@ -28,8 +28,9 @@ function Hero() {
         </div>
 
         {/* Floating Cards — Right */}
-        <div className="floating-card" style={{ right: "2%", top: "18%", "--rot": "4deg", animationDelay: "0.6s" } as React.CSSProperties & { "--rot": string }}>
+        <div className="floating-card" style={{ right: "2%", top: "26%", "--rot": "4deg", animationDelay: "0.6s" } as React.CSSProperties & { "--rot": string }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em" }}>🔥 Trending now</div>
+
           {["Viral Thread Writer", "SaaS Copywriter", "Code Reviewer"].map((t, i) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0", borderBottom: i < 2 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
               <span style={{ fontSize: 12, color: "#374151" }}>{t}</span>

@@ -2,13 +2,11 @@
 
 
 import { useScrollReveal } from '@/src/hooks/landing-page/page';
-import React, { useState,useEffect } from 'react'
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react'
 
 function Navbar() {
   useScrollReveal
-
-
-
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -275,6 +273,15 @@ function Navbar() {
           .footer-grid { grid-template-columns: 1fr !important; }
           .hero-headline { font-size: clamp(2.2rem, 9vw, 3rem) !important; }
         }
+          .hide-on-mobile {
+  display: inline-flex;
+}
+
+@media (max-width: 900px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
       `}</style>
 
       {/* ── NAV ─────────────────────────────────────────── */}
@@ -295,7 +302,7 @@ function Navbar() {
 
           {/* Nav Links */}
           <div className="nav-links" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
-            {["Marketplace", "Creators", "Pricing", "Blog"].map((link) => (
+            {["Marketplace", "Creators", "Pricing"].map((link) => (
               <a key={link} href={`#${link.toLowerCase()}`} style={{ fontSize: 15, fontWeight: 500, color: "#374151", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={e => (e.target as HTMLElement).style.color = "#FF6B35"}
                 onMouseLeave={e => (e.target as HTMLElement).style.color = "#374151"}>{link}</a>
@@ -303,10 +310,12 @@ function Navbar() {
           </div>
 
           {/* CTA */}
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <a href="#" style={{ fontSize: 14, fontWeight: 500, color: "#374151", textDecoration: "none", display: "flex" }}>Sign in</a>
 
-            <a href="#" className="btn-primary btn-accent sm:none" style={{ fontSize: 14, padding: "10px 22px" }}>Get Started Free →</a>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+
+            <Link prefetch={true} href={'/login'} style={{ fontSize: 14, fontWeight: 500, color: "#374151", textDecoration: "none", display: "flex" }}>Sign in</Link>
+
+            <Link href={'/login'} prefetch={true} className="btn-primary btn-accent sm:hidden hide-on-mobile" style={{ fontSize: 14, padding: "10px 22px" }}>Get Started Free →</Link>
 
             <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: 4, flexDirection: "column", gap: 5 }}>
@@ -322,7 +331,7 @@ function Navbar() {
               <a key={link} href={`#${link.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)}
                 style={{ display: "block", padding: "0.75rem 0", fontSize: 16, fontWeight: 500, color: "#0a0a0f", textDecoration: "none", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{link}</a>
             ))}
-            <a href="#" className="btn-primary btn-accent" style={{ marginTop: "1.25rem", display: "inline-flex" }}>Get Started Free →</a>
+            <Link href={'/login'} prefetch={true} className="btn-primary btn-accent sm:hidden" style={{ marginTop: "1.25rem", display: "inline-flex" }}>Get Started Free →</Link>
           </div>
         )}
       </nav>
