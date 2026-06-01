@@ -1,5 +1,7 @@
+import RegisterComponent from "@/src/components/auth/register-page";
+
 function RegisterPage() {
-  return <RegisterPage />;
+  return <RegisterComponent/>;
 }
 
 export default RegisterPage;

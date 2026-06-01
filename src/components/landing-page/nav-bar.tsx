@@ -6,7 +6,7 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react'
 
 function Navbar() {
-  useScrollReveal
+  useScrollReveal();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -314,9 +314,7 @@ function Navbar() {
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
 
             <Link prefetch={true} href={'/login'} style={{ fontSize: 14, fontWeight: 500, color: "#374151", textDecoration: "none", display: "flex" }}>Sign in</Link>
-
-            <Link href={'/login'} prefetch={true} className="btn-primary btn-accent sm:hidden hide-on-mobile" style={{ fontSize: 14, padding: "10px 22px" }}>Get Started Free →</Link>
-
+            <Link prefetch={true} href={'/login'} className="btn-primary btn-accent sm:hidden hide-on-mobile" style={{ fontSize: 14, padding: "10px 22px" }}>Get Started Free →</Link>
             <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: 4, flexDirection: "column", gap: 5 }}>
               {[0, 1, 2].map(i => <div key={i} style={{ width: 24, height: 2, background: "#0a0a0f", borderRadius: 2, transition: "all 0.2s" }} />)}

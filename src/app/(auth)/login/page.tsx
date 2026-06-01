@@ -1,7 +1,8 @@
+import LoginComponent from "@/src/components/auth/login-page";
 
 
 function LoginPage() {
-  return <LoginPage />;
+  return <LoginComponent/>
 }
 
 export default LoginPage;
