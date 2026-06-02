@@ -1,4 +1,4 @@
-import { demoPromptsData } from "@/src/data/auth";
+
 import { DemoPrompt } from "@/src/interfaces/auth";
 
 
