@@ -90,7 +90,7 @@ function LoginComponent() {
                   message: "Invalid email address",
                 },
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
+              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
                 errors.email ? "border-red-300 text-red-900" : "border-gray-200"
               }`}
               placeholder="you@example.com"
@@ -115,7 +115,7 @@ function LoginComponent() {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
+              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
                 errors.password ? "border-red-300 text-red-900" : "border-gray-200"
               }`}
               placeholder="••••••••"
