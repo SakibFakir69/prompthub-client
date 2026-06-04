@@ -11,7 +11,10 @@
     "ptr-w": "npx prettier . --write"
   },
   "dependencies": {
-    "@next/env": "^16.1.6",
+    "@hookform/resolvers": "^5.4.0",
+    "@next/env": "^16.2.7",
+    "@reduxjs/toolkit": "^2.12.0",
+    "axios": "^1.17.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
@@ -19,9 +22,11 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-hook-form": "^7.76.1",
+    "react-hook-form": "^7.77.0",
+    "react-redux": "^9.3.0",
+    "react-toastify": "^11.1.0",
     "tailwind-merge": "^3.4.0",
-    "zod": "^4.3.6",
+    "zod": "^4.4.3",
     "zustand": "^5.0.10"
   },
   "devDependencies": {

@@ -3,21 +3,70 @@ import { useForm } from "react-hook-form";
 import { registerUserSchemaValidation } from "@/src/validations/auth";
 import Link from "next/link";
 import AuthBackground from "./auth-background";
+import { ToastContainer, toast } from 'react-toastify';
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from 'zod'
+type registerType = z.infer<typeof registerUserSchemaValidation>
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 function RegisterComponent() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm<registerType>({
+    resolver: zodResolver(registerUserSchemaValidation),
+
+  });
+
 
   const password = watch("password", "");
+  console.log(password)
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: registerType) => {
+
     const { confirmPassword, ...registrationData } = data;
     console.log("Registering user with:", registrationData);
+
+
+    try {
+      const res = await axios.post('https://prompthub-2.onrender.com/api/v1/users', registrationData);
+      console.log(res, 'rse')
+
+      if (Number(res.status) === 201 && res?.data.status === true) {
+
+        console.log("sending.....")
+
+        const otpRes = await axios.post('https://prompthub-2.onrender.com/api/v1/otp/send-otp',
+          {
+            email: data?.email,
+            name: data?.name
+          }
+        )
+        console.log(otpRes, 'otp');
+
+
+
+        toast.success("OTP Send Successfully");
+
+        router.push(`/otp?email=${data?.email}&name=${data?.name}`);
+
+
+
+
+      }
+
+    } catch (error: any) {
+
+      toast.error(error?.name)
+
+    }
+
+
   };
 
   const handleGoogleSignUp = () => {
@@ -26,12 +75,13 @@ function RegisterComponent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
-      
-      <AuthBackground/>
+      <ToastContainer />
+
+      <AuthBackground />
 
       {/* ── Register Form ── */}
       <div className="max-w-md w-full space-y-6 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200/60 relative z-10">
-        
+
         {/* Brand / Logo area */}
         <div className="text-center">
           <div className="mx-auto w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#ff9a76] flex items-center justify-center mb-4 shadow-md">
@@ -72,7 +122,7 @@ function RegisterComponent() {
 
         {/* Form Inputs */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          
+
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -103,9 +153,8 @@ function RegisterComponent() {
                   message: "Invalid email address",
                 },
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
-                errors.email ? "border-red-300 text-red-900" : "border-gray-200"
-              }`}
+              className={`appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${errors.email ? "border-red-300 text-red-900" : "border-gray-200"
+                }`}
               placeholder="you@example.com"
             />
             {errors.email && <p className="mt-1.5 text-xs text-red-500">{errors.email.message as string}</p>}
@@ -126,9 +175,8 @@ function RegisterComponent() {
                   message: "Password must be at least 6 characters long",
                 },
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
-                errors.password ? "border-red-300 text-red-900" : "border-gray-200"
-              }`}
+              className={`appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${errors.password ? "border-red-300 text-red-900" : "border-gray-200"
+                }`}
               placeholder="••••••••"
             />
             {errors.password && <p className="mt-1.5 text-xs text-red-500">{errors.password.message as string}</p>}
@@ -146,12 +194,11 @@ function RegisterComponent() {
                 required: "Please confirm your password",
                 validate: (value) => value === password || "Passwords do not match",
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
-                errors.confirmPassword ? "border-red-300 text-red-900" : "border-gray-200"
-              }`}
+              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${errors.password ? "border-red-300 text-red-900" : "border-gray-200"
+                }`}
               placeholder="••••••••"
             />
-            {errors.confirmPassword && <p className="mt-1.5 text-xs text-red-500">{errors?.confirmPassword?.message as string}</p>}
+            {errors.confirmPassword && <p className="mt-1.5 text-xs text-red-500">{errors.confirmPassword.message as string}</p>}
           </div>
 
           {/* Submit Button */}

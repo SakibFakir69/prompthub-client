@@ -2,6 +2,8 @@
 import React, { useRef, useEffect, KeyboardEvent, ClipboardEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import AuthBackground from "./auth-background";
+import { useSearchParams } from "next/navigation";
+
 
 interface OtpFormValues {
   otp: string[];
@@ -15,7 +17,7 @@ interface OtpComponentProps {
 }
 
 function OtpComponent({
-  email = "you@example.com",
+
   onVerify,
   onResend,
   onBack,
@@ -25,6 +27,11 @@ function OtpComponent({
   const [canResend, setCanResend] = React.useState(false);
   const [verified, setVerified] = React.useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const searchParams= useSearchParams();
+
+  const email =searchParams.get("email");
+    const name = searchParams.get("name");
+
 
   const {
     control,
@@ -120,6 +127,7 @@ function OtpComponent({
 
   /* ── Resend ── */
   const handleResend = async () => {
+
     if (!canResend) return;
     setValue("otp", Array(6).fill(""));
     clearErrors("otp");
@@ -131,6 +139,7 @@ function OtpComponent({
     } catch {
       // handle silently or show toast
     }
+    
   };
 
   const hasError = !!errors.otp;
@@ -195,8 +204,8 @@ function OtpComponent({
                     onPaste={handlePaste}
                     onFocus={(e) => e.target.select()}
                     className={`
-                      w-12 h-14 text-center text-xl font-bold rounded-xl border
-                      shadow-sm outline-none transition-all duration-200
+                      w-12 h-14 text-center text-xl font-bold rounded border
+                       outline-none transition-all duration-200
                       focus:ring-2 focus:ring-[#FF6B35]/30 focus:border-[#FF6B35]
                       disabled:opacity-60 disabled:cursor-not-allowed
                       ${hasError

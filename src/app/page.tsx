@@ -41,6 +41,7 @@ const Testimonials = dynamic(
 
 
 export default function LandingPage() {
+ 
   return (
     <main className="overflow-x-hidden">
       <Navbar />

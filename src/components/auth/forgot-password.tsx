@@ -134,7 +134,7 @@ function ResetPasswordComponent() {
                       message: "Invalid email address",
                     },
                   })}
-                  className={`appearance-none block w-full px-4 py-2.5 border rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
+                  className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
                     errors.email
                       ? "border-red-300 text-red-900"
                       : "border-gray-200"
@@ -154,7 +154,7 @@ function ResetPasswordComponent() {
                 type="submit"
                 className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-[#FF6B35] hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B35] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Sending link…" : "Send reset link"}
+                {isSubmitting ? "Sending link…" : "Send reset"}
               </button>
             </form>
 
