@@ -5,11 +5,14 @@ import AuthBackground from "./auth-background";
 import { toast, ToastContainer } from "react-toastify";
 import { useLoginUserMutation } from "@/src/store/features/auth/auth.features";
 import CatchErrorHandel from "@/src/helper/error/error.helper";
+import { useRouter } from "next/navigation";
 
 
 
 function LoginComponent() {
   const [ loginUser] = useLoginUserMutation();
+
+  const router = useRouter();
 
   const {
     register,
@@ -29,6 +32,7 @@ function LoginComponent() {
 
       const res = await  loginUser(data).unwrap();
       console.log(res);
+      router.replace('/home')
       toast.success("Login in Successfully");
       
     } catch (error:any) {

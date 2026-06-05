@@ -55,6 +55,7 @@ function ResetPasswordComponent() {
       if (res?.status) {
         router.replace('/login');
         setTimeout(() => {
+          
           toast.success(res?.message)
 
         }, 700);

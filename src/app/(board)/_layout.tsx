@@ -1,10 +1,10 @@
 import React from 'react'
 
-function BoardRootLayouts() {
+function BoardRootLayouts({children}) {
   
   return (
     <div>
-        
+        {children}
 
     </div>
   )
