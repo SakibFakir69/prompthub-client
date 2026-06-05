@@ -3,10 +3,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useResetPasswordMutation } from "@/src/store/features/auth/auth.features";
 import { toast, ToastContainer } from "react-toastify";
 import { IError } from "@/src/interfaces/error/error.interface";
+import CatchErrorHandel from "@/src/helper/error/error.helper";
 
 function ResetPasswordComponent() {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -16,6 +17,7 @@ function ResetPasswordComponent() {
 
   const email = searchParams.get("email");
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const router = useRouter();
 
   const {
     register,
@@ -28,16 +30,16 @@ function ResetPasswordComponent() {
     console.log("Reset Password Data:", data);
     // Simulate API call
     //// newPassword, confirmPassword,email
-    const { confirmPassword, newPassword } = data;
-    if (confirmPassword !== newPassword) {
-      toast.error("Both Password not match");
-      return;
-    }
+    const { confirmPassword, password } = data;
+    // if (confirmPassword !== newPassword) {
+    //   toast.error("Both Password not match");
+    //   return;
+    // }
 
     const payload = {
 
       email: email,
-      newPassword: newPassword,
+      newPassword: password,
       confirmPassword: confirmPassword
 
 
@@ -45,17 +47,28 @@ function ResetPasswordComponent() {
 
 
     try {
+      console.log(payload)
 
       const res = await resetPassword(payload).unwrap();
       console.log(res);
 
+      if (res?.status) {
+        router.replace('/login');
+        setTimeout(() => {
+          toast.success(res?.message)
 
-    } catch (error:any) {
-      
+        }, 700);
+
+      }
+
+
+    } catch (error: any) {
+
       console.log(error);
-      toast.error(error?.data?.message);
+      CatchErrorHandel(error);
 
-      
+
+
 
 
 

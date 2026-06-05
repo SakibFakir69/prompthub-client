@@ -3,6 +3,10 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import ReduxContextProvider from '../context/ReduxContextProvider';
 import './globals.css'
 
+// dynamic
+// genrate metadata
+
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],

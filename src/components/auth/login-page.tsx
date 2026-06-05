@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
 import { toast, ToastContainer } from "react-toastify";
 import { useLoginUserMutation } from "@/src/store/features/auth/auth.features";
+import CatchErrorHandel from "@/src/helper/error/error.helper";
 
 
 
@@ -31,8 +32,8 @@ function LoginComponent() {
       toast.success("Login in Successfully");
       
     } catch (error:any) {
-      console.log(error)
-      toast.error(error?.data?.message)     
+       CatchErrorHandel(error);  
+       
     }
 
   };

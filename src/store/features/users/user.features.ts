@@ -6,7 +6,7 @@ export const userApi = baseApi.injectEndpoints({
 
     registerUser: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/users",
+        url: "/user/users",
         method: "POST",
         body: data,
       }),
@@ -16,7 +16,7 @@ export const userApi = baseApi.injectEndpoints({
 
     updateUser: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/users",
+        url: "/user/users",
         method: "PUT",
         body: data,
       }),
@@ -26,7 +26,7 @@ export const userApi = baseApi.injectEndpoints({
   
     deleteUser: builder.mutation({
       query: () => ({
-        url: "/users",
+        url: "/user/users",
         method: "DELETE",
       }),
       invalidatesTags: ["Auth", "Users"],
@@ -34,13 +34,7 @@ export const userApi = baseApi.injectEndpoints({
 
   
 
-    getMe: builder.query({
-      query: () => ({
-        url: "/users/me",
-        method: "GET",
-      }),
-      providesTags: ["Users", "Auth"],
-    }),
+  
   }),
 });
 
@@ -49,6 +43,4 @@ export const {
   useRegisterUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
-  useGetMeQuery,
-  useLazyGetMeQuery, /// why use lazy here
 } = userApi;

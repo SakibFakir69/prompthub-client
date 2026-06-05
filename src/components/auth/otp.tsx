@@ -5,6 +5,7 @@ import AuthBackground from "./auth-background";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSendOtpMutation, useVerifyOtpMutation } from "@/src/store/features/otp/otp.features";
 import { toast, ToastContainer } from "react-toastify";
+import CatchErrorHandel from "@/src/helper/error/error.helper";
 
 interface OtpFormValues {
   otp: string[];
@@ -38,6 +39,9 @@ function OtpComponent({
   const name = searchParams.get("name");
   const from = searchParams.get("from");
   const router = useRouter();
+  console.log(from , 
+  "from"
+  );
 
 
 
@@ -127,18 +131,20 @@ function OtpComponent({
 
       const success = await verifyOtp({ otp: code, email: email }).unwrap();
 
-      if (success.status === true && from?.includes("reset-email")) {
+      if (success.status === true && from==="reset-email") {
         router.push(`/reset-password?email=${email}`)
       }
 
-      if (success.status === true) {
+      if (success.status === true && from!=="reset-email") {
         router.replace('/login')
       }
 
 
 
-    } catch {
-      setError("otp", { message: "Something went wrong. Please try again." });
+    } catch(error:any) {
+      
+       CatchErrorHandel(error);
+      
     }
   };
 

@@ -6,6 +6,7 @@ import AuthBackground from "./auth-background";
 import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/navigation";
+import CatchErrorHandel from "@/src/helper/error/error.helper";
 
 
 
@@ -50,7 +51,8 @@ function ResetPasswordComponent() {
 
     } catch (error: any) {
       console.log(error?.data);
-      toast.error(`Error:${error?.data?.message}`)
+   
+      CatchErrorHandel(error);
 
 
     }
