@@ -3,11 +3,18 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
+import { useSearchParams } from "next/navigation";
+import { useResetPasswordMutation } from "@/src/store/features/auth/auth.features";
+import { toast, ToastContainer } from "react-toastify";
 
 function ResetPasswordComponent() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const searchParams = useSearchParams();
+  
+  const email = searchParams.get("email");
+  const [resetPassword,{isLoading}] = useResetPasswordMutation();
 
   const {
     register,
@@ -19,8 +26,39 @@ function ResetPasswordComponent() {
   const onSubmit = async (data: any) => {
     console.log("Reset Password Data:", data);
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSuccess(true);
+    //// newPassword, confirmPassword,email
+    const {confirmPassword,newPassword} = data;
+    if(confirmPassword!==newPassword)
+    {
+      toast.error("Both Password not match");
+      return;
+    }
+
+    const payload= {
+
+      email:email,
+      newPassword:newPassword,
+      confirmPassword:confirmPassword
+
+
+    }
+
+
+    try {
+
+      const res = await resetPassword(payload).unwrap();
+      console.log(res);
+      
+      
+    } catch (error:any) {
+      console.log(error);
+      toast.error(error?.data?.message)
+      
+    }
+
+
+
+
   };
 
   // Reusable input class logic
@@ -32,6 +70,7 @@ function ResetPasswordComponent() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
       <AuthBackground />
+      <ToastContainer/>
 
       {/* ── Card ── */}
       <div className="max-w-md w-full space-y-8 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200/60 relative z-10">

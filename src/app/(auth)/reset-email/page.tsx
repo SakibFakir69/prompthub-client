@@ -1,6 +1,6 @@
 
 
-import ResetPasswordComponent from '@/src/components/auth/forgot-password'
+import ResetPasswordComponent from '@/src/components/auth/reset-email'
 
 
 function page() {

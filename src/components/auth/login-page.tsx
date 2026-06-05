@@ -3,31 +3,36 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
 import { toast, ToastContainer } from "react-toastify";
-
+import { useLoginUserMutation } from "@/src/store/features/auth/auth.features";
 
 
 
 function LoginComponent() {
+  const [ loginUser] = useLoginUserMutation();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const onSubmit = (data: any) => {
+
+  const onSubmit =async (data: any) => {
     console.log("Email/Password Login Data:", data);
 
     // IF USER VERIFY RETURN TO BOARD 
     // ELSE RETURN TO RESET EMAIL 
 
     try {
+      console.log("login...")
 
-      const res = "";
+      const res = await  loginUser(data).unwrap();
       console.log(res);
       toast.success("Login in Successfully");
       
     } catch (error:any) {
-      console.log(error?.data);      
+      console.log(error)
+      toast.error(error?.data?.message)     
     }
 
   };

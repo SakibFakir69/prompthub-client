@@ -50,5 +50,5 @@ export const {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useGetMeQuery,
-  useLazyGetMeQuery,
+  useLazyGetMeQuery, /// why use lazy here
 } = userApi;

@@ -37,7 +37,7 @@ function ResetPasswordComponent() {
 
         setTimeout(() => {
 
-          router.push(`/otp?email=${email}&name=Guest`);
+          router.push(`/otp?email=${email}&name=Guest&from=reset-email`);
 
         }, 800);
 

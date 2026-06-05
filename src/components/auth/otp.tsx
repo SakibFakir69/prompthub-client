@@ -28,15 +28,16 @@ function OtpComponent({
   const [canResend, setCanResend] = React.useState(false);
   const [verified, setVerified] = React.useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const searchParams= useSearchParams();
-      const [verifyOtp, {isLoading}] = useVerifyOtpMutation();
-    const [sendOtp,{isLoading:isOtpLoading}] = useSendOtpMutation();
+  const searchParams = useSearchParams();
+  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
+  const [sendOtp, { isLoading: isOtpLoading }] = useSendOtpMutation();
 
 
 
-  const email =searchParams.get("email");
-    const name = searchParams.get("name");
-    const router= useRouter();
+  const email = searchParams.get("email");
+  const name = searchParams.get("name");
+  const from = searchParams.get("from");
+  const router = useRouter();
 
 
 
@@ -124,15 +125,17 @@ function OtpComponent({
       const code = data?.otp.join('');
       console.log(code);
 
-      const success = await verifyOtp({otp:code, email:email}).unwrap();
+      const success = await verifyOtp({ otp: code, email: email }).unwrap();
 
-      if(success.status===true){
-
-        router.replace('/login')
-        
+      if (success.status === true && from?.includes("reset-email")) {
+        router.push(`/reset-password?email=${email}`)
       }
 
-     
+      if (success.status === true) {
+        router.replace('/login')
+      }
+
+
 
     } catch {
       setError("otp", { message: "Something went wrong. Please try again." });
@@ -150,21 +153,21 @@ function OtpComponent({
     startTimer();
     try {
 
-      await sendOtp({email:email, name:name}).unwrap();
+      await sendOtp({ email: email, name: name }).unwrap();
       toast.success("OTP Send Successfully")
       console.log("resen")
 
-      
+
     } catch {
       // handle silently or show toast
     }
-    
+
   };
 
   const hasError = !!errors.otp;
 
   // how to find pre router before reach here
-  
+
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
@@ -234,10 +237,10 @@ function OtpComponent({
                       ${hasError
                         ? "border-red-400 bg-red-50 text-red-700 animate-[shake_0.35s_ease]"
                         : verified
-                        ? "border-green-400 bg-green-50 text-green-700"
-                        : field.value
-                        ? "border-[#FF6B35] bg-orange-50/50 text-gray-900"
-                        : "border-gray-200 bg-white text-gray-900"
+                          ? "border-green-400 bg-green-50 text-green-700"
+                          : field.value
+                            ? "border-[#FF6B35] bg-orange-50/50 text-gray-900"
+                            : "border-gray-200 bg-white text-gray-900"
                       }
                     `}
                   />
@@ -258,7 +261,7 @@ function OtpComponent({
           {/* Submit button */}
           <button
             type="submit"
-            disabled={ isSubmitting || verified}
+            disabled={isSubmitting || verified}
             className={`
               w-full flex items-center justify-center py-2.5 px-4
               rounded-xl text-sm font-semibold text-white
@@ -298,11 +301,10 @@ function OtpComponent({
             type="button"
             onClick={handleResend}
             disabled={!canResend}
-            className={`font-semibold transition-colors ${
-              canResend
-                ? "text-[#FF6B35] hover:text-[#e55a2b] cursor-pointer"
-                : "text-gray-400 cursor-default"
-            }`}
+            className={`font-semibold transition-colors ${canResend
+              ? "text-[#FF6B35] hover:text-[#e55a2b] cursor-pointer"
+              : "text-gray-400 cursor-default"
+              }`}
           >
             {canResend ? "Resend code" : `Resend in ${timer}s`}
           </button>
