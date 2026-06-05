@@ -6,15 +6,16 @@ import AuthBackground from "./auth-background";
 import { useSearchParams } from "next/navigation";
 import { useResetPasswordMutation } from "@/src/store/features/auth/auth.features";
 import { toast, ToastContainer } from "react-toastify";
+import { IError } from "@/src/interfaces/error/error.interface";
 
 function ResetPasswordComponent() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const searchParams = useSearchParams();
-  
+
   const email = searchParams.get("email");
-  const [resetPassword,{isLoading}] = useResetPasswordMutation();
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const {
     register,
@@ -27,18 +28,17 @@ function ResetPasswordComponent() {
     console.log("Reset Password Data:", data);
     // Simulate API call
     //// newPassword, confirmPassword,email
-    const {confirmPassword,newPassword} = data;
-    if(confirmPassword!==newPassword)
-    {
+    const { confirmPassword, newPassword } = data;
+    if (confirmPassword !== newPassword) {
       toast.error("Both Password not match");
       return;
     }
 
-    const payload= {
+    const payload = {
 
-      email:email,
-      newPassword:newPassword,
-      confirmPassword:confirmPassword
+      email: email,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword
 
 
     }
@@ -48,12 +48,18 @@ function ResetPasswordComponent() {
 
       const res = await resetPassword(payload).unwrap();
       console.log(res);
-      
-      
+
+
     } catch (error:any) {
-      console.log(error);
-      toast.error(error?.data?.message)
       
+      console.log(error);
+      toast.error(error?.data?.message);
+
+      
+
+
+
+
     }
 
 
@@ -63,18 +69,17 @@ function ResetPasswordComponent() {
 
   // Reusable input class logic
   const inputClass = (hasError: boolean) =>
-    `appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 pr-10 ${
-      hasError ? "border-red-300 text-red-900" : "border-gray-200"
+    `appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 pr-10 ${hasError ? "border-red-300 text-red-900" : "border-gray-200"
     }`;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
       <AuthBackground />
-      <ToastContainer/>
+      <ToastContainer />
 
       {/* ── Card ── */}
       <div className="max-w-md w-full space-y-8 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200/60 relative z-10">
-        
+
         {/* ── Success State ── */}
         {isSuccess ? (
           <div className="space-y-6">
