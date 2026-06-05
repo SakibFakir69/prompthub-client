@@ -3,9 +3,15 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
+import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
+import { toast, ToastContainer } from "react-toastify";
+import { useRouter } from "next/navigation";
+
+
 
 function ResetPasswordComponent() {
   const [emailSent, setEmailSent] = useState(false);
+  const [sendOtp] = useSendOtpMutation();
 
   const {
     register,
@@ -13,16 +19,50 @@ function ResetPasswordComponent() {
     formState: { errors, isSubmitting },
     getValues,
   } = useForm();
+  const router = useRouter();
 
   const onSubmit = async (data: any) => {
     console.log("Forgot Password Data:", data);
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setEmailSent(true);
+    const { email } = data;
+
+    try {
+      console.log("inside try")
+
+      const resetEmail = await sendOtp({ email: email, name: "Guest" }).unwrap();
+      console.log(resetEmail);
+
+      if (resetEmail?.status) {
+        toast.success("OTP Send youe email");
+
+        setTimeout(() => {
+
+          router.push(`/otp?email=${email}&name=Guest`);
+
+        }, 800);
+
+      }
+
+
+
+
+
+
+    } catch (error: any) {
+      console.log(error?.data);
+      toast.error(`Error:${error?.data?.message}`)
+
+
+    }
+
+
+
+
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
+      <ToastContainer />
       <AuthBackground />
 
       {/* ── Card ── */}
@@ -134,11 +174,10 @@ function ResetPasswordComponent() {
                       message: "Invalid email address",
                     },
                   })}
-                  className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
-                    errors.email
-                      ? "border-red-300 text-red-900"
-                      : "border-gray-200"
-                  }`}
+                  className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${errors.email
+                    ? "border-red-300 text-red-900"
+                    : "border-gray-200"
+                    }`}
                   placeholder="you@example.com"
                 />
                 {errors.email && (

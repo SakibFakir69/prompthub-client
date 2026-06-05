@@ -2,8 +2,9 @@
 import React, { useRef, useEffect, KeyboardEvent, ClipboardEvent } from "react";
 import { useForm, Controller } from "react-hook-form";
 import AuthBackground from "./auth-background";
-import { useSearchParams } from "next/navigation";
-
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSendOtpMutation, useVerifyOtpMutation } from "@/src/store/features/otp/otp.features";
+import { toast, ToastContainer } from "react-toastify";
 
 interface OtpFormValues {
   otp: string[];
@@ -28,9 +29,17 @@ function OtpComponent({
   const [verified, setVerified] = React.useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const searchParams= useSearchParams();
+      const [verifyOtp, {isLoading}] = useVerifyOtpMutation();
+    const [sendOtp,{isLoading:isOtpLoading}] = useSendOtpMutation();
+
+
 
   const email =searchParams.get("email");
     const name = searchParams.get("name");
+    const router= useRouter();
+
+
+
 
 
   const {
@@ -106,20 +115,25 @@ function OtpComponent({
   /* ── Submit ── */
   const onSubmit = async (data: OtpFormValues) => {
     const code = data.otp.join("");
-    if (code.length < 6) {
+    if (code.length < 4) {
       setError("otp", { message: "Please enter all 6 digits." });
       return;
     }
     try {
-      const success = onVerify ? await onVerify(code) : code === "123456";
-      if (success) {
-        setVerified(true);
-        clearErrors("otp");
-      } else {
-        setError("otp", { message: "Incorrect code. Please try again." });
-        setValue("otp", Array(6).fill(""));
-        inputRefs.current[0]?.focus();
+      console.log(data?.otp, ' otp code')
+      const code = data?.otp.join('');
+      console.log(code);
+
+      const success = await verifyOtp({otp:code, email:email}).unwrap();
+
+      if(success.status===true){
+
+        router.replace('/login')
+        
       }
+
+     
+
     } catch {
       setError("otp", { message: "Something went wrong. Please try again." });
     }
@@ -129,13 +143,18 @@ function OtpComponent({
   const handleResend = async () => {
 
     if (!canResend) return;
-    setValue("otp", Array(6).fill(""));
+    setValue("otp", Array(4).fill(""));
     clearErrors("otp");
     setVerified(false);
     inputRefs.current[0]?.focus();
     startTimer();
     try {
-      await onResend?.();
+
+      await sendOtp({email:email, name:name}).unwrap();
+      toast.success("OTP Send Successfully")
+      console.log("resen")
+
+      
     } catch {
       // handle silently or show toast
     }
@@ -144,9 +163,13 @@ function OtpComponent({
 
   const hasError = !!errors.otp;
 
+  // how to find pre router before reach here
+  
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
       <AuthBackground />
+      <ToastContainer />
 
       <div className="max-w-md w-full space-y-6 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200/60 relative z-10">
 
@@ -159,7 +182,7 @@ function OtpComponent({
           </div>
           <h2 className="text-3xl font-extrabold text-gray-900">Verify your email</h2>
           <p className="mt-2 text-sm text-gray-500">
-            We've sent a 6-digit code to
+            We've sent a 4-digit code to
           </p>
           <span className="inline-block mt-1.5 px-3 py-0.5 bg-orange-50 text-[#FF6B35] border border-orange-200 rounded-lg text-sm font-semibold">
             {email}
@@ -181,7 +204,7 @@ function OtpComponent({
             role="group"
             aria-label="One-time password"
           >
-            {Array.from({ length: 6 }).map((_, index) => (
+            {Array.from({ length: 4 }).map((_, index) => (
               <Controller
                 key={index}
                 name={`otp.${index}`}
@@ -235,7 +258,7 @@ function OtpComponent({
           {/* Submit button */}
           <button
             type="submit"
-            disabled={!isComplete || isSubmitting || verified}
+            disabled={ isSubmitting || verified}
             className={`
               w-full flex items-center justify-center py-2.5 px-4
               rounded-xl text-sm font-semibold text-white

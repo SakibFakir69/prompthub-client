@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
-
+// axios watcher
 
 export const baseApi =createApi({
     reducerPath:"baseApi",
@@ -9,6 +9,8 @@ export const baseApi =createApi({
         baseUrl:process.env.NEXT_PUBLIC_BACKEND_URL
 
     }),
-    endpoints:(build)=>({})
+    endpoints:()=>({}),
+    
+    tagTypes:['Users','Otp','Auth']
 
 })

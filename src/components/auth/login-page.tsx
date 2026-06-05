@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
+import { toast, ToastContainer } from "react-toastify";
 
 
 
@@ -15,6 +16,20 @@ function LoginComponent() {
 
   const onSubmit = (data: any) => {
     console.log("Email/Password Login Data:", data);
+
+    // IF USER VERIFY RETURN TO BOARD 
+    // ELSE RETURN TO RESET EMAIL 
+
+    try {
+
+      const res = "";
+      console.log(res);
+      toast.success("Login in Successfully");
+      
+    } catch (error:any) {
+      console.log(error?.data);      
+    }
+
   };
 
   const handleGoogleLogin = () => {
@@ -23,6 +38,8 @@ function LoginComponent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
+
+      <ToastContainer/>
 
       <AuthBackground/>
 
@@ -142,7 +159,10 @@ function LoginComponent() {
             className="font-semibold text-[#FF6B35] hover:text-[#e55a2b] transition-colors">
             Register
           </Link>
+          <br/>
+          <Link prefetch={true} className="text-[#FF6B35]" href={'/reset-email'}>Forgot password</Link>
         </p>
+        
       </div>
     </div>
   );
