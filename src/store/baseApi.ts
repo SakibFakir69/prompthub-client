@@ -48,6 +48,6 @@ export const baseApi = createApi({
   baseQuery: axiosBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
   }),
-  tagTypes: ['Users', 'Otp', 'Auth'],
+  tagTypes: ['Users', 'Otp', 'Auth', 'Prompt', 'SavedPrompt']
   endpoints: () => ({}),
 })

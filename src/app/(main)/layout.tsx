@@ -3,6 +3,9 @@ import LeftSidebar from "@/src/components/main/LeftSidebar"
 import MobileNav from "@/src/components/main/MobileNav"
 import RightSidebar from "@/src/components/main/RightSidebar"
 
+// USER CAN ACCESS THIS PAGE BUT NOT POST 
+// IF POST MUST NEED LOGIN
+// FOR CREATE PROMPT ,TAKE INSPARE
 
 export default function MainRootLayout({ children }: { children: React.ReactNode }) {
   return (
