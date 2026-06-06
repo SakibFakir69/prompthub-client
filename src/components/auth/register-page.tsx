@@ -9,10 +9,17 @@ import { z } from 'zod'
 type registerType = z.infer<typeof registerUserSchemaValidation>
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useGoogleLoginMutation } from "@/src/store/features/auth/auth.features";
+import { useRegisterUserMutation } from "@/src/store/features/users/user.features";
+import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
 
 
 function RegisterComponent() {
   const router = useRouter();
+  const [googleLogin] = useGoogleLoginMutation();
+  const [registerUser] = useRegisterUserMutation();
+  const [sendOtp] = useSendOtpMutation();
+
   const {
     register,
     handleSubmit,
@@ -34,19 +41,17 @@ function RegisterComponent() {
 
 
     try {
-      const res = await axios.post('https://prompthub-2.onrender.com/api/v1/users', registrationData);
+      const res = await registerUser(registrationData).unwrap();
       console.log(res, 'rse')
 
       if (Number(res.status) === 201 && res?.data.status === true) {
 
         console.log("sending.....")
 
-        const otpRes = await axios.post('https://prompthub-2.onrender.com/api/v1/otp/send-otp',
-          {
-            email: data?.email,
-            name: data?.name
-          }
-        )
+        const otpRes = await sendOtp({
+          email: data?.email,
+          name: data?.name
+        }).unwrap();
         console.log(otpRes, 'otp');
 
 
@@ -69,8 +74,20 @@ function RegisterComponent() {
 
   };
 
-  const handleGoogleSignUp = () => {
+  const handleGoogleSignUp = async () => {
     console.log("Initiating Google OAuth Registration...");
+    try {
+      window.open(
+        "https://prompthub-2.onrender.com/api/v1/auth/google",
+        "_self"
+      );
+
+
+
+    } catch (error) {
+      console.log(error);
+
+    }
   };
 
   return (

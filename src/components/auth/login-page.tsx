@@ -24,8 +24,7 @@ function LoginComponent() {
   const onSubmit =async (data: any) => {
     console.log("Email/Password Login Data:", data);
 
-    // IF USER VERIFY RETURN TO BOARD 
-    // ELSE RETURN TO RESET EMAIL 
+   
 
     try {
       console.log("login...")
