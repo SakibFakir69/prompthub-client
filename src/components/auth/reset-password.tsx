@@ -6,13 +6,15 @@ import AuthBackground from "./auth-background";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useResetPasswordMutation } from "@/src/store/features/auth/auth.features";
 import { toast, ToastContainer } from "react-toastify";
-import { IError } from "@/src/interfaces/error/error.interface";
 import CatchErrorHandel from "@/src/helper/error/error.helper";
+import { inputClass } from "@/src/style/auth/auth.style";
+
 
 function ResetPasswordComponent() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const searchParams = useSearchParams();
 
   const email = searchParams.get("email");
@@ -28,19 +30,15 @@ function ResetPasswordComponent() {
 
   const onSubmit = async (data: any) => {
     console.log("Reset Password Data:", data);
-    // Simulate API call
-    //// newPassword, confirmPassword,email
+  
     const { confirmPassword, password } = data;
-    // if (confirmPassword !== newPassword) {
-    //   toast.error("Both Password not match");
-    //   return;
-    // }
+
 
     const payload = {
 
-      email: email,
-      newPassword: password,
-      confirmPassword: confirmPassword
+      email: email as string,
+      newPassword: password as string,
+      confirmPassword: confirmPassword as string
 
 
     }
@@ -55,7 +53,7 @@ function ResetPasswordComponent() {
       if (res?.status) {
         router.replace('/login');
         setTimeout(() => {
-          
+
           toast.success(res?.message)
 
         }, 700);
@@ -64,15 +62,8 @@ function ResetPasswordComponent() {
 
 
     } catch (error: any) {
-
       console.log(error);
       CatchErrorHandel(error);
-
-
-
-
-
-
 
     }
 
@@ -81,10 +72,8 @@ function ResetPasswordComponent() {
 
   };
 
-  // Reusable input class logic
-  const inputClass = (hasError: boolean) =>
-    `appearance-none block w-full px-4 py-2.5 border rounded  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 pr-10 ${hasError ? "border-red-300 text-red-900" : "border-gray-200"
-    }`;
+ 
+
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">

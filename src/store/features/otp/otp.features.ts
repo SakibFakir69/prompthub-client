@@ -2,22 +2,28 @@ import { baseApi } from "../../baseApi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+
+
 export interface SendOtpPayload {
-  email: string
+  email: string,
+  name:string
+
 }
 
 export interface SendOtpResponse {
-  message: string
+  message: string,
+  status:boolean,
 }
 
-export interface VerifyOtpPayload {
+export interface VerifyOtpPayload  extends SendOtpPayload{
   email: string
-  otp: string
+  otp: string,
 }
 
 export interface VerifyOtpResponse {
   message: string
-  verified: boolean
+  verified: boolean,
+  status?:boolean
 }
 
 

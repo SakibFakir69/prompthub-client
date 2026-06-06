@@ -1,4 +1,4 @@
-// components/AuthBackground.tsx
+
 import { demoPromptsData } from "@/src/data/auth";
 import { PromptCardLogin } from "./prompt-login-card";
 

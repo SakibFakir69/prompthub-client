@@ -13,6 +13,7 @@ export interface AuthResponse {
   message: string
   accessToken?: string
   user?: User
+  status:boolean
 }
 
 export interface LoginPayload {
@@ -27,7 +28,7 @@ export interface ChangePasswordPayload {
 
 export interface ResetPasswordPayload {
   email: string
-  otp: string
+  confirmPassword: string
   newPassword: string
 }
 

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useForm } from "react-hook-form";
 import AuthBackground from "./auth-background";
 import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
@@ -12,8 +12,8 @@ import CatchErrorHandel from "@/src/helper/error/error.helper";
 
 function ResetPasswordComponent() {
   const [emailSent, setEmailSent] = useState(false);
-  const [sendOtp] = useSendOtpMutation();
 
+  const [sendOtp] = useSendOtpMutation();
   const {
     register,
     handleSubmit,
@@ -24,7 +24,7 @@ function ResetPasswordComponent() {
 
   const onSubmit = async (data: any) => {
     console.log("Forgot Password Data:", data);
-    // Simulate API call
+  
     const { email } = data;
 
     try {

@@ -4,13 +4,15 @@ export interface User {
   id?: string
   name?: string
   email?: string
+  status:string
   // add more fields as needed
 }
 
 export interface RegisterUserPayload {
   name: string
   email: string
-  password: string
+  password: string,
+  status?:string
 }
 
 export interface UpdateUserPayload {
@@ -23,7 +25,7 @@ export interface UpdateUserPayload {
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
-    registerUser: builder.mutation<User, RegisterUserPayload>({
+    registerUser: builder.mutation({
       query: (data) => ({
         url: "/user/users",
         method: "POST",

@@ -7,8 +7,10 @@ import { useSendOtpMutation, useVerifyOtpMutation } from "@/src/store/features/o
 import { toast, ToastContainer } from "react-toastify";
 import CatchErrorHandel from "@/src/helper/error/error.helper";
 
+
 interface OtpFormValues {
   otp: string[];
+  email:string
 }
 
 interface OtpComponentProps {
@@ -57,7 +59,7 @@ function OtpComponent({
     watch,
     formState: { errors, isSubmitting },
   } = useForm<OtpFormValues>({
-    defaultValues: { otp: Array(6).fill("") },
+    defaultValues: { otp: Array(4).fill("") },
   });
 
   const otpValues = watch("otp");
@@ -119,9 +121,14 @@ function OtpComponent({
 
   /* ── Submit ── */
   const onSubmit = async (data: OtpFormValues) => {
+
     const code = data.otp.join("");
     if (code.length < 4) {
       setError("otp", { message: "Please enter all 6 digits." });
+      return;
+    }
+    if(!email ||!name){
+      toast.error("Please provide all info");
       return;
     }
     try {
@@ -173,7 +180,7 @@ function OtpComponent({
 
   const hasError = !!errors.otp;
 
-  // how to find pre router before reach here
+
 
 
   return (
