@@ -1,30 +1,47 @@
 import { baseApi } from "../../baseApi";
 
+export interface User {
+  id?: string
+  name?: string
+  email?: string
+  // add more fields as needed
+}
+
+export interface RegisterUserPayload {
+  name: string
+  email: string
+  password: string
+}
+
+export interface UpdateUserPayload {
+  name?: string
+  email?: string
+  password?: string
+}
+
+
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-  
 
-    registerUser: builder.mutation({
+    registerUser: builder.mutation<User, RegisterUserPayload>({
       query: (data) => ({
         url: "/user/users",
         method: "POST",
-        body: data,
+        data,                          
       }),
       invalidatesTags: ["Auth", "Users"],
     }),
 
-
-    updateUser: builder.mutation({
+    updateUser: builder.mutation<User, UpdateUserPayload>({
       query: (data) => ({
         url: "/user/users",
         method: "PUT",
-        body: data,
+        data,                          //
       }),
       invalidatesTags: ["Auth", "Users"],
     }),
 
-  
-    deleteUser: builder.mutation({
+    deleteUser: builder.mutation<{ success: boolean }, void>({
       query: () => ({
         url: "/user/users",
         method: "DELETE",
@@ -32,13 +49,12 @@ export const userApi = baseApi.injectEndpoints({
       invalidatesTags: ["Auth", "Users"],
     }),
 
-  
-
-  
   }),
+  overrideExisting: false,          
 });
 
-// Export Hooks
+// ─── Hooks ────────────────────────────────────────────────────────────────────
+
 export const {
   useRegisterUserMutation,
   useUpdateUserMutation,

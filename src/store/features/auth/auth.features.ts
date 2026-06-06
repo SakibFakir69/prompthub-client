@@ -1,45 +1,79 @@
 import { baseApi } from "../../baseApi";
 
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  createdAt: string
+}
+
+export interface AuthResponse {
+  message: string
+  accessToken?: string
+  user?: User
+}
+
+export interface LoginPayload {
+  email: string
+  password: string
+}
+
+export interface ChangePasswordPayload {
+  oldPassword: string
+  newPassword: string
+}
+
+export interface ResetPasswordPayload {
+  email: string
+  otp: string
+  newPassword: string
+}
+
+export interface ResetEmailPayload {
+  email: string
+}
+
+
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
-    loginUser: builder.mutation({
+    loginUser: builder.mutation<AuthResponse, LoginPayload>({
       query: (data) => ({
         url: "/auth/login",
         method: "POST",
-        body: data,
+        data,                       
       }),
-  
       invalidatesTags: ["Auth"],
     }),
 
-    changePassword: builder.mutation({
+    changePassword: builder.mutation<AuthResponse, ChangePasswordPayload>({
       query: (data) => ({
         url: "/auth/change-password",
         method: "POST",
-        body: data,
+        data,                     
       }),
       invalidatesTags: ["Auth"],
     }),
 
-    resetPassword: builder.mutation({
+    resetPassword: builder.mutation<AuthResponse, ResetPasswordPayload>({
       query: (data) => ({
         url: "/auth/reset-password",
         method: "POST",
-        body: data,
+        data,                        
       }),
     }),
 
-    refreshToken: builder.mutation({
+    refreshToken: builder.mutation<AuthResponse, void>({
       query: () => ({
         url: "/auth/refresh",
-        method: "POST",
-        // Usually uses cookie, so no body needed
+        method: "POST",             
       }),
       invalidatesTags: ["Auth"],
     }),
 
-    logoutUser: builder.mutation({
+    logoutUser: builder.mutation<{ message: string }, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
@@ -47,33 +81,18 @@ export const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["Auth"],
     }),
 
-    // Email reset flow
-    resetEmail: builder.mutation({
+    resetEmail: builder.mutation<{ message: string }, ResetEmailPayload>({
       query: (data) => ({
         url: "/auth/reset-email",
         method: "POST",
-        body: data,
+        data,                       
       }),
     }),
 
-    // resetCode: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/auth/reset-code",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
+    // useResetCodeMutation,
+    // useResendResetCodeMutation,
 
-    // resendResetCode: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/auth/reset-otp-code",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
-
-  
-    getMe: builder.query({
+    getMe: builder.query<User, void>({
       query: () => ({
         url: "/auth/me",
         method: "GET",
@@ -81,17 +100,17 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ["Auth"],
     }),
 
- 
-    googleLogin: builder.mutation({
+    googleLogin: builder.mutation<AuthResponse, void>({
       query: () => ({
         url: "/auth/google",
-        method: "GET",
+        method: "GET",               
       }),
     }),
+
   }),
+  overrideExisting: false,
 });
 
-// Export hooks
 export const {
   useLoginUserMutation,
   useChangePasswordMutation,
@@ -99,10 +118,9 @@ export const {
   useRefreshTokenMutation,
   useLogoutUserMutation,
   useResetEmailMutation,
-//   useResetCodeMutation,
-//   useResendResetCodeMutation,
+  // useResetCodeMutation,
+  // useResendResetCodeMutation,
   useGetMeQuery,
   useLazyGetMeQuery,
-  // Google (if needed)
   useGoogleLoginMutation,
 } = authApi;

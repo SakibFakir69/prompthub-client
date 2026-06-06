@@ -143,7 +143,7 @@ function OtpComponent({
 
     } catch(error:any) {
       
-       CatchErrorHandel(error);
+       toast.error(error?.data?.message)
       
     }
   };
@@ -164,8 +164,9 @@ function OtpComponent({
       console.log("resen")
 
 
-    } catch {
+    } catch(error:any) {
       // handle silently or show toast
+      toast.error(error?.data?.message)
     }
 
   };
@@ -319,7 +320,7 @@ function OtpComponent({
         {/* Back link */}
         <button
           type="button"
-          onClick={onBack}
+          onClick={()=> router.push('/login')}
           className="flex items-center justify-center gap-1.5 w-full text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer mt-2"
         >
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

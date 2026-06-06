@@ -6,12 +6,11 @@ import AuthBackground from "./auth-background";
 import { ToastContainer, toast } from 'react-toastify';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from 'zod'
-type registerType = z.infer<typeof registerUserSchemaValidation>
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useGoogleLoginMutation } from "@/src/store/features/auth/auth.features";
 import { useRegisterUserMutation } from "@/src/store/features/users/user.features";
 import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
+type registerType = z.infer<typeof registerUserSchemaValidation>
 
 
 function RegisterComponent() {
@@ -44,7 +43,7 @@ function RegisterComponent() {
       const res = await registerUser(registrationData).unwrap();
       console.log(res, 'rse')
 
-      if (Number(res.status) === 201 && res?.data.status === true) {
+      if (res?.status===true) {
 
         console.log("sending.....")
 
@@ -67,7 +66,7 @@ function RegisterComponent() {
 
     } catch (error: any) {
 
-      toast.error(error?.name)
+      toast.error(error?.data?.message)
 
     }
 

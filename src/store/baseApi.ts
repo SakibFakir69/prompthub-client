@@ -1,16 +1,53 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import type { BaseQueryFn } from '@reduxjs/toolkit/query'
+import type { AxiosRequestConfig, AxiosError } from 'axios'
+import axiosInstance from '../axios/axiosInstance'
 
 
-// axios watcher
+interface AxiosBaseQueryArgs {
+  url: string
+  method?: AxiosRequestConfig['method']
+  data?: unknown
+  params?: Record<string, unknown>
+  headers?: Record<string, string>
+}
 
-export const baseApi =createApi({
-    reducerPath:"baseApi",
-    baseQuery:fetchBaseQuery({
-        baseUrl:process.env.NEXT_PUBLIC_BACKEND_URL
+interface AxiosBaseQueryError {
+  status: number | undefined
+  data: unknown
+}
 
-    }),
-    endpoints:()=>({}),
-    
-    tagTypes:['Users','Otp','Auth']
 
+const axiosBaseQuery = (
+  { baseUrl }: { baseUrl?: string } = { baseUrl: '' }
+): BaseQueryFn<AxiosBaseQueryArgs, unknown, AxiosBaseQueryError> =>
+  async ({ url, method = 'GET', data, params, headers }) => {
+    try {
+      const result = await axiosInstance({
+        url: (baseUrl ?? '') + url,
+        method,
+        data,
+        params,
+        headers,
+      })
+      return { data: result.data }
+    } catch (error) {
+      const axiosError = error as AxiosError
+      return {
+        error: {
+          status: axiosError.response?.status,
+          data: axiosError.response?.data ?? axiosError.message,
+        },
+      }
+    }
+  }
+
+
+export const baseApi = createApi({
+  reducerPath: 'baseApi',
+  baseQuery: axiosBaseQuery({
+    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
+  }),
+  tagTypes: ['Users', 'Otp', 'Auth'],
+  endpoints: () => ({}),
 })
