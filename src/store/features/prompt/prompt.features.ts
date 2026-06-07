@@ -86,7 +86,7 @@ export const promptApi = baseApi.injectEndpoints({
     
     getAllPrompts: builder.query<PromptsResponse, void>({
       query: () => ({
-        url: '/get-prompt',
+        url: '/prompt/get-prompt',
         method: 'GET',
       }),
       providesTags: ['Prompt'],

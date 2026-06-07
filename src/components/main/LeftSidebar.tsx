@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { MiniProfile } from './profile/profile'
 
 const NAV = [
   { href: '/home',      icon: '⌂',  label: 'Home' },
@@ -23,15 +24,7 @@ export default function LeftSidebar() {
       </div>
 
       {/* Profile mini */}
-      <div className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer mb-5 transition-colors">
-        <div className="w-9 h-9 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-sm font-medium shrink-0">
-          SK
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">Sakib Khan</p>
-          <p className="text-xs text-gray-500">@sakib · Pro</p>
-        </div>
-      </div>
+      <MiniProfile/>
 
       {/* Nav links */}
       <nav className="flex flex-col gap-1 flex-1">

@@ -1,7 +1,10 @@
-// import CreatePromptBox from '@/components/main/CreatePromptBox'
+
+"use client"
+
 
 import CreatePromptBox from "@/src/components/main/CreatePromptBox"
 import PromptFeedCard from "@/src/components/main/PromptFeedCard"
+import { useGetAllPromptsQuery } from "@/src/store/features/prompt/prompt.features"
 
 
 
@@ -40,6 +43,12 @@ const MOCK_POSTS = [
 ]
 
 export default function HomePage() {
+
+
+  const {data:getAllPromptsData} = useGetAllPromptsQuery(null);
+  console.log(getAllPromptsData);
+
+
   return (
     <div>
       {/* Topbar */}

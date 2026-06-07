@@ -24,7 +24,7 @@ const axiosBaseQuery = (
   async ({ url, method = 'GET', data, params, headers }) => {
     try {
       const result = await axiosInstance({
-        url: (baseUrl ?? '') + url,
+        url,
         method,
         data,
         params,
@@ -45,9 +45,7 @@ const axiosBaseQuery = (
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
-  baseQuery: axiosBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
-  }),
-  tagTypes: ['Users', 'Otp', 'Auth', 'Prompt', 'SavedPrompt']
+  baseQuery: axiosBaseQuery(),
+  tagTypes: ['Users', 'Otp', 'Auth', 'Prompt', 'SavedPrompt'],
   endpoints: () => ({}),
 })
