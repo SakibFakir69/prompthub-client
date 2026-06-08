@@ -1,15 +1,18 @@
-
 "use client"
 
 import { useGetMeQuery } from "@/src/store/features/auth/auth.features"
 import Image from "next/image"
+import { MiniProfileSkeleton } from "./profile-skeleton"
 
 
+export function MiniProfile({ profileData }: { profileData: any }) {
 
-export function MiniProfile() {
-  
-  const { data: getMeData } = useGetMeQuery()
-  const { name, email, avatar } = getMeData?.data || {}
+  const { data: getMeData,isLoading } = useGetMeQuery()
+
+
+  const activeUser = getMeData?.data || profileData?.data || profileData || {}
+  const { name, email, avatar } = activeUser
+
 
   const initials = name
     ?.split(' ')
@@ -18,6 +21,12 @@ export function MiniProfile() {
     .join('')
     .toUpperCase()
 
+
+    if(isLoading)
+    {
+      return <MiniProfileSkeleton/>
+    }
+
   return (
     <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-100 mb-5 cursor-pointer hover:bg-gray-100 transition-colors">
       {avatar ? (
@@ -25,8 +34,8 @@ export function MiniProfile() {
           src={avatar}
           width={36}
           height={36}
-          alt={`${name} photo`}
-          className="rounded-full flex-shrink-0 object-cover"
+          alt={name ? `${name} photo` : "User profile photo"}
+          className="rounded-full flex-shrink-0 object-cover w-9 h-9" // Added fixed width/height classes
         />
       ) : (
         <div className="w-9 h-9 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
@@ -35,8 +44,8 @@ export function MiniProfile() {
       )}
 
       <div className="flex-1 min-w-0">
-        <p className="text-[13px] font-medium text-gray-900 truncate">{name ?? '—'}</p>
-        <p className="text-[11px] text-gray-500 truncate">{email ?? '—'}</p>
+        <p className="text-[13px] font-medium text-gray-900 truncate">{name ?? 'Loading...'}</p>
+        <p className="text-[11px] text-gray-500 truncate">{email ?? '...'}</p>
       </div>
 
       <svg className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

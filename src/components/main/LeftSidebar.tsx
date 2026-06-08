@@ -1,55 +1,53 @@
-'use client'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { MiniProfile } from './profile/profile'
+import { cookies } from 'next/headers';
+import { MiniProfile } from './profile/profile';
+import { NavLinks } from './left-sidebar-menu';
 
-const NAV = [
-  { href: '/home',      icon: '⌂',  label: 'Home' },
-  { href: '/explore',   icon: '◎',  label: 'Explore' },
-  { href: '/saved',     icon: '◈',  label: 'Saved' },
-  { href: '/profile',   icon: '◉',  label: 'Profile' },
-  { href: '/settings',  icon: '⚙',  label: 'Settings' },
-]
 
-export default function LeftSidebar() {
-  const pathname = usePathname()
+const getProfileInfo = async () => {
+  try {
+  
+    const cookieStore = await cookies()
+    const allCookies = cookieStore.toString() 
+
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
+      method: "GET",
+      cache: "no-store", 
+      headers: {
+       
+        Cookie: allCookies, 
+      },
+    });
+    
+    if (!res.ok) {
+      console.warn(`Server-side fetch failed with status: ${res.status}`);
+      return null; 
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error("Error inside getProfileInfo server wrapper:", error);
+    return null;
+  }
+}
+
+export default async function LeftSidebar() {
+  const profileData = await getProfileInfo();
 
   return (
-    <div className="flex flex-col h-full p-4">
-      {/* Logo */}
+    <div className="flex flex-col h-full p-4 border-r border-gray-100">
+    
+    
       <div className="px-3 py-2 mb-5">
         <span className="text-lg font-semibold tracking-tight">
           Prompt<span className="text-[#FF6B35]">Hub</span>
         </span>
       </div>
 
-      {/* Profile mini */}
-      <MiniProfile/>
+    
+      <MiniProfile profileData={profileData} />
 
-      {/* Nav links */}
-      <nav className="flex flex-col gap-1 flex-1">
-        {NAV.map(({ href, icon, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors
-              ${pathname === href
-                ? 'bg-orange-50 text-[#FF6B35] font-medium'
-                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-          >
-            <span className="text-base w-5 text-center">{icon}</span>
-            {label}
-          </Link>
-        ))}
-      </nav>
-
-      {/* New prompt button */}
-      <div className="pt-4 border-t border-gray-100 mt-4">
-        <button className="w-full flex items-center justify-center gap-2 bg-[#FF6B35] hover:bg-[#e5602e] text-white text-sm font-medium py-2.5 rounded-xl transition-colors">
-          + New Prompt
-        </button>
-      </div>
+      <NavLinks />
     </div>
   )
 }
