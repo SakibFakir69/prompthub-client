@@ -10,8 +10,6 @@ import Ticker from "../components/landing-page/Ticker";
 import Testionails from "../components/landing-page/testimonails";
 
 
-
-
 export default function LandingPage() {
  
   return (

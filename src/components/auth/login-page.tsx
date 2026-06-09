@@ -31,6 +31,7 @@ function LoginComponent() {
 
       const res = await  loginUser(data).unwrap();
       console.log(res);
+      // is User not verify return otp 
       router.replace('/home')
       toast.success("Login in Successfully");
       
