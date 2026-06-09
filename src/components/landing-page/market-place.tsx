@@ -1,3 +1,4 @@
+"use client"
 import { CATEGORIES, PROMPTS } from '@/src/constants/landing-page'
 import { useScrollReveal } from '@/src/hooks/landing-page/page';
 import React, { useEffect, useState } from 'react'

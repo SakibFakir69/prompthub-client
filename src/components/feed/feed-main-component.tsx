@@ -6,9 +6,10 @@ import { PromptCard } from "@/src/components/feed/PromptCard";
 import { PromptCardSkeleton } from "@/src/components/feed/PromptCardSkeleton";
 import CreatePromptBox from "@/src/components/main/CreatePromptBox";
 
-export default function FeedMainComponent({ initialData }) {
+export default function FeedMainComponent({ initialData }:any) {
 
   const [cursor, setCursor] = useState("");
+
   
   // Pass the current cursor to the RTK Query hook
   const { data, isLoading, isFetching, isError } = useGetallFeedQuery(cursor);
@@ -22,7 +23,7 @@ export default function FeedMainComponent({ initialData }) {
 
   const lastElementRef = useCallback(
     (node) => {
-        
+
       if (isLoading || isFetching) return;
       if (observer.current) observer.current.disconnect();
 
@@ -37,6 +38,8 @@ export default function FeedMainComponent({ initialData }) {
     },
     [isLoading, isFetching, nextCursor]
   );
+
+  console.log(initialData)
 
   return (
     <div>
@@ -57,11 +60,11 @@ export default function FeedMainComponent({ initialData }) {
           if (currentFeed.length === index + 1) {
             return (
               <div ref={lastElementRef} key={prompt._id}>
-                <PromptCard prompt={prompt} />
+                <PromptCard prompt={prompt} promptId={prompt._id || prompt.id} />
               </div>
             );
           }
-          return <PromptCard key={prompt._id} prompt={prompt} />;
+          return <PromptCard key={prompt._id} prompt={prompt} promptId={prompt._id || prompt.id}/>;
         })}
 
         {/* Loading Skeletons for successive page requests */}

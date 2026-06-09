@@ -1,4 +1,4 @@
-
+"use client"
 
 
 import { useScrollReveal } from '@/src/hooks/landing-page/page';

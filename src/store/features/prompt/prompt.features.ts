@@ -95,7 +95,7 @@ export const promptApi = baseApi.injectEndpoints({
   
     getPromptDetails: builder.query<PromptResponse, string>({
       query: (id) => ({
-        url: `/prompt-details/${id}`,
+        url: `/prompt/prompt-details/${id}`,
         method: 'GET',
       }),
       providesTags: (_result, _error, id) => [{ type: 'Prompt', id }],

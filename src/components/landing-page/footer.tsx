@@ -1,6 +1,5 @@
 
-
-import React from 'react'
+"use client"
 
 function Footer() {
   return (
