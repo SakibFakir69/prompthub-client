@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 
 function LoginComponent() {
-  const [ loginUser] = useLoginUserMutation();
+  const [loginUser] = useLoginUserMutation();
 
   const router = useRouter();
 
@@ -21,23 +21,29 @@ function LoginComponent() {
   } = useForm();
 
 
-  const onSubmit =async (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log("Email/Password Login Data:", data);
 
-   
+
 
     try {
       console.log("login...")
 
-      const res = await  loginUser(data).unwrap();
+      const res = await loginUser(data).unwrap();
       console.log(res);
+
+      if(!res?.data?.isOtpVerify)
+      {
+        router.replace(`/otp?email=${data?.email}`)
+
+      }
       // is User not verify return otp 
       router.replace('/home')
       toast.success("Login in Successfully");
-      
-    } catch (error:any) {
-       CatchErrorHandel(error);  
-       
+
+    } catch (error: any) {
+      CatchErrorHandel(error);
+
     }
 
   };
@@ -49,9 +55,9 @@ function LoginComponent() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
 
-      <ToastContainer/>
+      <ToastContainer />
 
-      <AuthBackground/>
+      <AuthBackground />
 
       {/* ── Login Form ── */}
       <div className="max-w-md w-full space-y-8 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200/60 relative z-10">
@@ -116,9 +122,8 @@ function LoginComponent() {
                   message: "Invalid email address",
                 },
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
-                errors.email ? "border-red-300 text-red-900" : "border-gray-200"
-              }`}
+              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${errors.email ? "border-red-300 text-red-900" : "border-gray-200"
+                }`}
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -141,9 +146,8 @@ function LoginComponent() {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${
-                errors.password ? "border-red-300 text-red-900" : "border-gray-200"
-              }`}
+              className={`appearance-none block w-full px-4 py-2.5 border rounded placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FF6B35]/40 focus:border-[#FF6B35] sm:text-sm transition-all duration-200 ${errors.password ? "border-red-300 text-red-900" : "border-gray-200"
+                }`}
               placeholder="••••••••"
             />
             {errors.password && (
@@ -169,10 +173,10 @@ function LoginComponent() {
             className="font-semibold text-[#FF6B35] hover:text-[#e55a2b] transition-colors">
             Register
           </Link>
-          <br/>
+          <br />
           <Link prefetch={true} className="text-[#FF6B35]" href={'/reset-email'}>Forgot password</Link>
         </p>
-        
+
       </div>
     </div>
   );
