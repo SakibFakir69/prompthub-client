@@ -77,9 +77,10 @@ function RegisterComponent() {
     console.log("Initiating Google OAuth Registration...");
     try {
       window.open(
-        "https://prompthub-2.onrender.com/api/v1/auth/google",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
         "_self"
       );
+      router.push('/home');
 
 
 

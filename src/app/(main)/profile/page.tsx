@@ -1,14 +1,10 @@
-
-
-import React from 'react'
+import ProfileComponent from "@/src/components/profile/profile"
 
 
 
 
 function page() {
-  return (
-    <div>profile</div>
-  )
+  return <ProfileComponent/>
 }
 
 export default page

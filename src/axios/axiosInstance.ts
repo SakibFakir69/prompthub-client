@@ -1,4 +1,3 @@
-// axios/axiosInstance.ts
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 
@@ -11,41 +10,43 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// REQUEST: always ensure cookies included
+axiosInstance.interceptors.request.use((config) => {
+  config.withCredentials = true;
+  return config;
+});
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryableRequest;
 
-    // No config available
     if (!originalRequest) {
       return Promise.reject(error);
     }
 
-    // Prevent infinite loop on refresh endpoint
-    if (originalRequest.url?.includes("/auth/refresh")) {
+    const url = originalRequest.url || "";
+
+    // avoid refresh loop
+    if (url.includes("/auth/refresh") || url.includes("/auth/logout")) {
       return Promise.reject(error);
     }
 
-    // Refresh access token on 401
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         await axiosInstance.post("/auth/refresh");
 
-        // Retry original request
+        // IMPORTANT: retry after refresh
         return axiosInstance(originalRequest);
-      } catch (refreshError) {
+      } catch (err) {
+        // safer logout
         if (typeof window !== "undefined") {
-          localStorage.clear();
-          sessionStorage.clear();
-          window.location.replace("/login");
+          window.location.href = "/login";
         }
 
-        return Promise.reject(refreshError);
+        return Promise.reject(err);
       }
     }
 

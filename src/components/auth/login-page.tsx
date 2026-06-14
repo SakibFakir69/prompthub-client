@@ -32,8 +32,7 @@ function LoginComponent() {
       const res = await loginUser(data).unwrap();
       console.log(res);
 
-      if(!res?.data?.isOtpVerify)
-      {
+      if (!res?.data?.isOtpVerify) {
         router.replace(`/otp?email=${data?.email}`)
 
       }
@@ -48,8 +47,21 @@ function LoginComponent() {
 
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Initiating Google OAuth flow...");
+  const handleGoogleLogin = async () => {
+    console.log("Initiating Google OAuth Registration...");
+    try {
+      window.open(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`,
+        "_self"
+      );
+      router.push('/home');
+
+
+
+    } catch (error) {
+      console.log(error);
+
+    }
   };
 
   return (

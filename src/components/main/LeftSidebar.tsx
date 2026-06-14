@@ -3,7 +3,7 @@ import { MiniProfile } from './profile/profile';
 import { NavLinks } from './left-sidebar-menu';
 
 
-const getProfileInfo = async () => {
+export const getProfileInfo = async () => {
   try {
   
     const cookieStore = await cookies()
