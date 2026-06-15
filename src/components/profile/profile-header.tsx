@@ -22,7 +22,7 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ user, promptCount }: ProfileHeaderProps) {
   return (
-    <div className="flex flex-col items-center text-center gap-5">
+    <div className="flex flex-col items-center text-center md:gap-3 gap-1">
       <ProfileAvatar
         avatar={user?.avatar}
         name={user?.name}
@@ -36,7 +36,7 @@ export default function ProfileHeader({ user, promptCount }: ProfileHeaderProps)
       </div>
 
       {user?.bio && (
-        <p className="text-sm text-gray-600 leading-relaxed max-w-sm">{user.bio}</p>
+        <p className="text-sm text-gray-600  max-w-sm">{user.bio}</p>
       )}
 
       {user?.tags && user.tags.length > 0 && (

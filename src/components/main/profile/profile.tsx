@@ -49,7 +49,7 @@ export function MiniProfile({ profileData }: { profileData: any }) {
 
   return (
     <div className="relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-gray-50 border border-gray-100 mb-5 cursor-pointer hover:bg-gray-100 transition-colors">
-      <ToastContainer />
+    
       
       {avatar ? (
         <Image

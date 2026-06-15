@@ -22,7 +22,7 @@ export interface LoginPayload {
 }
 
 export interface ChangePasswordPayload {
-  oldPassword: string
+  password: string
   newPassword: string
 }
 

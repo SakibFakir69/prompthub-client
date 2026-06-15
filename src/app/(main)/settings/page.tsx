@@ -1,11 +1,10 @@
 
 
+import SettingScreen from '@/src/components/settings/setting'
 import React from 'react'
 
 function page() {
-  return (
-    <div>setting</div>
-  )
+  return <SettingScreen/>
 }
 
 export default page
