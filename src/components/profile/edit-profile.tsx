@@ -9,11 +9,11 @@ import {
   ArrowLeft, Check, Loader2, Eye, EyeOff,
   Camera, Sparkles, X, Lock,
 } from "lucide-react";
-import { toast ,ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useGetMeQuery, useChangePasswordMutation } from "@/src/store/features/auth/auth.features";
 import { useUpdateUserMutation } from "@/src/store/features/users/user.features";
 
-
+// ─── Schemas ──────────────────────────────────────────────────────────────────
 
 const profileSchema = z.object({
   name:  z.string().min(2, "Name must be at least 2 characters"),
@@ -24,10 +24,10 @@ const profileSchema = z.object({
 
 const passwordSchema = z
   .object({
-    password: z.string().min(1, "Required"),
+    password:        z.string().min(1, "Required"),
     newPassword:     z.string()
       .min(8, "At least 8 characters")
-     
+      .regex(/[A-Z]/, "Include an uppercase letter")
       .regex(/[0-9]/, "Include a number"),
     confirmPassword: z.string().min(1, "Required"),
   })
@@ -52,15 +52,29 @@ function getStrength(pw: string): { score: number; label: string; color: string 
   return { score, label: labels[score], color: colors[score] };
 }
 
+/**
+ * FIX: total changed from 5 → 4 to match the 4 actual checks,
+ * so the bar can actually reach 100%.
+ */
 function profileCompleteness(user: any, bio: string, tags: string[]): number {
   let filled = 0;
-  const total = 5;
+  const total = 4;
   if (user?.name)   filled++;
   if (user?.email)  filled++;
   if (bio?.trim())  filled++;
   if (tags?.length) filled++;
- 
   return Math.round((filled / total) * 100);
+}
+
+/**
+ * FIX: Safe date formatter — handles undefined / null / invalid dates
+ * without installing any extra package (native Intl API).
+ */
+function formatMemberSince(raw: string | undefined | null): string {
+  if (!raw) return "—";
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long" });
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -304,8 +318,8 @@ function Skeleton() {
 export default function EditProfilePage() {
   const router = useRouter();
   const { data: user, isLoading: isMeLoading } = useGetMeQuery();
-  const [updateUser, { isLoading: isSaving }]       = useUpdateUserMutation();
-  const [changePassword, { isLoading: isPwSaving }] = useChangePasswordMutation();
+  const [updateUser,      { isLoading: isSaving }]   = useUpdateUserMutation();
+  const [changePassword,  { isLoading: isPwSaving }] = useChangePasswordMutation();
 
   // ── Profile form ────────────────────────────────────────────────────────────
   const {
@@ -319,12 +333,23 @@ export default function EditProfilePage() {
     resolver: zodResolver(profileSchema),
     defaultValues: { name: "", email: "", bio: "", tags: [] },
   });
+ 
+  const {name,email,bio,tags} = user?.data|| {};
+  console.log(name,email,user?.data)
 
+  
   useEffect(() => {
-    if (user) reset({ name: user.name ?? "", email: user.email ?? "", bio: "", tags: [] });
+    if (user) {
+      reset({
+        name:  name  ?? "",
+        email: email ?? "",
+        bio:   bio   ?? "",          
+        tags:  tags  ?? [],         
+      });
+    }
   }, [user, reset]);
 
-  const bioValue  = watch("bio") ?? "";
+  const bioValue  = watch("bio")  ?? "";
   const tagsValue = watch("tags") ?? [];
 
   const pct = profileCompleteness(user, bioValue, tagsValue);
@@ -359,10 +384,7 @@ export default function EditProfilePage() {
 
   const onChangePassword = async (data: PasswordForm) => {
     try {
-      const {password,newPassword} = data;
-
       await changePassword({ password: data.password, newPassword: data.newPassword }).unwrap();
-
       toast.success("Password updated");
       resetPw();
     } catch (err: any) {
@@ -387,6 +409,7 @@ export default function EditProfilePage() {
   // ── UI ──────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50">
+     
 
       {/* ── Sticky header ── */}
       <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
@@ -422,7 +445,7 @@ export default function EditProfilePage() {
             <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-4">Identity</p>
             <AvatarSection
               name={user.name}
-              avatar={undefined}
+              avatar={user.avatar ?? undefined}
               onUpload={onAvatarUpload}
               isUploading={false}
             />
@@ -434,11 +457,10 @@ export default function EditProfilePage() {
             {/* Name + Email row */}
             <div className="grid grid-cols-2 gap-3">
               <Field label="Full name" error={profileErrors.name?.message}>
-
                 <input className={inputCls(profileErrors.name?.message)} placeholder="Your name" {...register("name")} />
               </Field>
 
-              <Field label="Email" error={profileErrors.email?.message} hint="Re-verification may be required">
+              <Field label="Email" error={profileErrors.email?.message} >
                 <input className={inputCls(profileErrors.email?.message)} type="email" placeholder="you@example.com" {...register("email")} />
               </Field>
             </div>
@@ -464,7 +486,12 @@ export default function EditProfilePage() {
             <div className="flex gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => reset()}
+                onClick={() => reset({
+                  name:  user.name  ?? "",
+                  email: user.email ?? "",
+                  bio:   user.bio   ?? "",
+                  tags:  user.tags  ?? [],
+                })}
                 disabled={!isProfileDirty}
                 className="px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-40 transition-colors"
               >
@@ -482,10 +509,10 @@ export default function EditProfilePage() {
 
           {/* Read-only fields */}
           <div className="px-6 py-5 grid grid-cols-2 gap-3">
-            
             <Field label="Member since">
               <div className="px-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-500">
-                {new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })}
+                {/* FIX: safe date formatting — no crash on undefined/null/invalid */}
+                {formatMemberSince(user.createdAt ?? user.created_at)}
               </div>
             </Field>
           </div>
@@ -554,7 +581,6 @@ export default function EditProfilePage() {
           </form>
         </section>
 
-      
       </main>
     </div>
   );
