@@ -34,19 +34,24 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
   const [sort, setSort] = useState<SortOption>('name-asc')
   const [users, setUsers] = useState<SearchUser[]>(initialData?.data ?? [])
   const [hasNext, setHasNext] = useState(initialData?.pagination?.hasNextPage ?? false)
-  const [followedIds, setFollowedIds] = useState<Set<string>>(new Set())
+
+  const [followedIds, setFollowedIds] = useState<Set<string>>(
+    () => new Set(
+      (initialData?.data ?? [])
+        .filter((u) => u.isFollowing)
+        .map((u) => u._id)
+    )
+  )
   const [followLoadingIds, setFollowLoadingIds] = useState<Set<string>>(new Set())
 
-  // Use a ref for cursor to avoid stale closure in doSearch
   const cursorRef = useRef<string | null>(initialData?.pagination?.nextCursor ?? null)
-
   const [triggerSearch, { isFetching }] = useLazySearchUsersQuery()
   const [followUser] = useFollowUserMutation()
 
   const sentinelRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Keep latest doSearch in a ref so the IntersectionObserver never goes stale
   const doSearchRef = useRef<(reset?: boolean) => Promise<void>>(async () => {})
+  const isLoadingMoreRef = useRef(false)
 
   const doSearch = useCallback(
     async (reset = true) => {
@@ -60,10 +65,18 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
 
         if (reset) {
           setUsers(result.data)
+          setFollowedIds(
+            new Set(result.data.filter((u) => u.isFollowing).map((u) => u._id))
+          )
         } else {
           setUsers((prev) => {
             const existing = new Set(prev.map((u) => u._id))
             return [...prev, ...result.data.filter((u) => !existing.has(u._id))]
+          })
+          setFollowedIds((prev) => {
+            const next = new Set(prev)
+            result.data.forEach((u) => { if (u.isFollowing) next.add(u._id) })
+            return next
           })
         }
 
@@ -73,46 +86,37 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
         console.error('Search failed:', err)
       }
     },
-    // cursor intentionally excluded — read from ref instead
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [query, genderFilter, triggerSearch]
   )
 
-  // Keep ref in sync so IntersectionObserver always calls the latest version
-  useEffect(() => {
-    doSearchRef.current = doSearch
-  }, [doSearch])
+  useEffect(() => { doSearchRef.current = doSearch }, [doSearch])
 
-  // Debounced search on query / filter change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => doSearch(true), 300)
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-    }
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, genderFilter])
 
-  // Client-side sort
   useEffect(() => {
     setUsers((prev) => {
       const sorted = [...prev]
       sorted.sort((a, b) => {
         switch (sort) {
-          case 'name-asc':      return a.name.localeCompare(b.name)
-          case 'name-desc':     return b.name.localeCompare(a.name)
+          case 'name-asc':       return a.name.localeCompare(b.name)
+          case 'name-desc':      return b.name.localeCompare(a.name)
           case 'followers-desc': return (b.followers ?? 0) - (a.followers ?? 0)
-          case 'followers-asc': return (a.followers ?? 0) - (b.followers ?? 0)
-          case 'age-desc':      return (b.age ?? 0) - (a.age ?? 0)
-          case 'age-asc':       return (a.age ?? 0) - (b.age ?? 0)
-          default:              return 0
+          case 'followers-asc':  return (a.followers ?? 0) - (b.followers ?? 0)
+          case 'age-desc':       return (b.age ?? 0) - (a.age ?? 0)
+          case 'age-asc':        return (a.age ?? 0) - (b.age ?? 0)
+          default:               return 0
         }
       })
       return sorted
     })
   }, [sort])
 
-  // Infinite scroll — uses ref so observer never needs to re-subscribe
   const isFetchingRef = useRef(isFetching)
   const hasNextRef = useRef(hasNext)
   useEffect(() => { isFetchingRef.current = isFetching }, [isFetching])
@@ -123,31 +127,47 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
     if (!el) return
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && hasNextRef.current && !isFetchingRef.current) {
-          doSearchRef.current(false)
+        if (
+          entry.isIntersecting &&
+          hasNextRef.current &&
+          !isFetchingRef.current &&
+          !isLoadingMoreRef.current
+        ) {
+          isLoadingMoreRef.current = true
+          doSearchRef.current(false).finally(() => {
+            isLoadingMoreRef.current = false
+          })
         }
       },
       { rootMargin: '200px' }
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, []) // ← empty: subscribe once, refs keep values fresh
+  }, [])
 
-  // Follow / Unfollow — real API
   const handleToggleFollow = useCallback(async (userId: string) => {
     setFollowLoadingIds((prev) => new Set(prev).add(userId))
     try {
       const res = await followUser({ id: userId }).unwrap()
+
+      // ✅ FIX: res is { success, message, data: { following } }
+      // NOT { following } directly — must read res.data.following
+      const isNowFollowing = res.data.following
+
       setFollowedIds((prev) => {
         const next = new Set(prev)
-        // Backend returns { following: true/false } — use it as source of truth
-        if (res.following) {
-          next.add(userId)
-        } else {
-          next.delete(userId)
-        }
+        if (isNowFollowing) next.add(userId)
+        else next.delete(userId)
         return next
       })
+
+      setUsers((prev) =>
+        prev.map((u) => {
+          if (u._id !== userId) return u
+          const delta = isNowFollowing ? 1 : -1
+          return { ...u, followers: Math.max(0, (u.followers ?? 0) + delta) }
+        })
+      )
     } catch (err) {
       console.error('Follow toggle failed:', err)
     } finally {
@@ -182,7 +202,6 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-5">
-      {/* Header */}
       <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">People</h1>
@@ -195,7 +214,6 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
         )}
       </div>
 
-      {/* Search + Controls */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
@@ -216,7 +234,6 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
           )}
         </div>
 
-        {/* Gender filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -248,7 +265,6 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Sort */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -281,7 +297,6 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
         </DropdownMenu>
       </div>
 
-      {/* Active filter chips */}
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2">
           {chips.map((chip) => (
@@ -298,7 +313,6 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
 
       {users.length > 0 && <div className="h-px bg-border" />}
 
-      {/* User list */}
       <div className="space-y-2.5">
         {users.map((user) => (
           <UserCard

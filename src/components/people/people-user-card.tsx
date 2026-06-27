@@ -25,7 +25,8 @@ export function UserCard({
   onToggleFollow: (id: string) => Promise<void>
   currentUserId?: string
 }) {
-  const isSelf = currentUserId === user._id
+  // Never show Follow on your own card
+  const isSelf = !!currentUserId && user._id === currentUserId
 
   return (
     <div className="group flex items-center gap-4 p-4 rounded-2xl border border-border bg-card hover:border-primary/30 hover:shadow-md hover:shadow-primary/[0.03] transition-all duration-200">
@@ -51,7 +52,8 @@ export function UserCard({
         <div className="flex items-center gap-4 mt-2">
           <span className="text-xs text-muted-foreground">
             <span className="font-semibold text-foreground tabular-nums">
-              {fmtNum(user.followers?.length)}
+              {/* followers is a number — do NOT use .length */}
+              {fmtNum(user.followers)}
             </span>{' '}
             followers
           </span>
@@ -69,6 +71,7 @@ export function UserCard({
           variant={isFollowing ? 'outline' : 'default'}
           onClick={() => onToggleFollow(user._id)}
           disabled={isFollowLoading}
+          aria-label={isFollowing ? `Unfollow ${user.name}` : `Follow ${user.name}`}
           className={cn(
             'shrink-0 gap-1.5 text-xs font-medium transition-all duration-200 min-w-[88px] justify-center',
             isFollowLoading && 'opacity-60 cursor-not-allowed',
@@ -90,8 +93,8 @@ export function UserCard({
             </>
           ) : isFollowing ? (
             <>
-              <UserCheck className="w-3.5 h-3.5 group-hover:[.peer_&]:hidden" />
-              <UserMinus className="w-3.5 h-3.5 hidden group-hover:[.peer_&]:block" />
+              <UserCheck className="w-3.5 h-3.5 group-hover:hidden" />
+              <UserMinus className="w-3.5 h-3.5 hidden group-hover:block" />
               <span className="hidden sm:inline group-hover:hidden">Following</span>
               <span className="hidden sm:group-hover:inline">Unfollow</span>
             </>

@@ -1,6 +1,7 @@
+
 import { baseApi } from "../../baseApi"
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+
 
 export interface Prompt {
   _id: string
@@ -169,6 +170,14 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: ['SavedPrompt'],
     }),
 
+    trending:builder.query<any,void>({
+      query:()=>({
+        url:'/trending',
+        method:"GET"
+      }),
+    
+    })
+
   }),
   overrideExisting: false,
 })
@@ -187,4 +196,5 @@ export const {
   useSavePromptMutation,
   useGetSavedPromptsQuery,
   useDeleteSavedPromptMutation,
+  useGetTrendingQuery
 } = promptApi

@@ -124,4 +124,4 @@ export const {
   useGetMeQuery,
   useLazyGetMeQuery,
   useGoogleLoginMutation,
-} = authApi;
+} = authApi

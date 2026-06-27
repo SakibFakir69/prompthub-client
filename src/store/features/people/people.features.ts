@@ -8,6 +8,7 @@ export interface SearchUser {
     followers: number;
     age: number;
     avatar?: string;
+    isFollowing?: boolean;
 }
 
 export interface SearchUsersRequest {
@@ -28,44 +29,46 @@ export interface SearchUsersResponse {
 }
 
 export interface FollowUserRequest {
-    id: string; // targetUserId — matches req.body.id on backend
+    id: string;
 }
 
+// ✅ FIX: matches actual ReturnResponse wrapper shape
 export interface FollowUserResponse {
-    following: boolean;
+    success: boolean;
+    message: string;
+    data: {
+        following: boolean;
+    };
 }
 
 const peopleApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        // ── Search (GET with query params, cursor-based infinite scroll) ──
         searchUsers: builder.query<SearchUsersResponse, SearchUsersRequest>({
             query: ({ name, email, age, gender, cursor, limit = 20 }) => ({
                 url: "/people/search",
                 method: "GET",
                 params: {
-                    ...(name     && { name }),
-                    ...(email    && { email }),
-                    ...(age      && { age }),
-                    ...(gender   && { gender }),
-                    ...(cursor   && { cursor }),
+                    ...(name   && { name }),
+                    ...(email  && { email }),
+                    ...(age    && { age }),
+                    ...(gender && { gender }),
+                    ...(cursor && { cursor }),
                     limit,
                 },
             }),
 
-            // Keep cache key stable across page loads — ignore cursor so all
-            // pages of the same filter set share one cache entry.
             serializeQueryArgs: ({ queryArgs }) => {
                 const { cursor: _cursor, ...filters } = queryArgs;
                 return filters;
             },
 
-            // Append incoming page to existing cached data.
             merge: (currentCache, newItems) => {
-                currentCache.data.push(...newItems.data);
+                const existingIds = new Set(currentCache.data.map((u) => u._id));
+                const fresh = newItems.data.filter((u) => !existingIds.has(u._id));
+                currentCache.data.push(...fresh);
                 currentCache.pagination = newItems.pagination;
             },
 
-            // Re-fetch when filters change (cursor change alone does not refetch).
             forceRefetch: ({ currentArg, previousArg }) => {
                 if (!currentArg || !previousArg) return true;
                 return currentArg.cursor !== previousArg.cursor;
@@ -83,17 +86,13 @@ const peopleApi = baseApi.injectEndpoints({
                     : [{ type: "People" as const, id: "LIST" }],
         }),
 
-        // ── Follow / Unfollow toggle (single endpoint on backend) ──
         followUser: builder.mutation<FollowUserResponse, FollowUserRequest>({
             query: ({ id }) => ({
                 url: "/people/follow",
                 method: "POST",
-                data: { id }, // backend reads req.body.id
+                data: { id },
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: "People", id },
-                { type: "People", id: "LIST" },
-            ],
+            // No invalidatesTags — state patched manually in component
         }),
     }),
     overrideExisting: false,
