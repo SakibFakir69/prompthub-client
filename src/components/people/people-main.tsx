@@ -53,42 +53,49 @@ export default function PeopleSearch({ data: initialData, currentUserId }: Peopl
   const doSearchRef = useRef<(reset?: boolean) => Promise<void>>(async () => {})
   const isLoadingMoreRef = useRef(false)
 
-  const doSearch = useCallback(
-    async (reset = true) => {
-      try {
-        const result = await triggerSearch({
-          name: query || undefined,
-          gender: genderFilter !== 'all' ? genderFilter : undefined,
-          cursor: reset ? undefined : cursorRef.current ?? undefined,
-          limit: PAGE_SIZE,
-        }).unwrap()
+  // people-search.tsx
 
-        if (reset) {
-          setUsers(result.data)
-          setFollowedIds(
-            new Set(result.data.filter((u) => u.isFollowing).map((u) => u._id))
-          )
-        } else {
-          setUsers((prev) => {
-            const existing = new Set(prev.map((u) => u._id))
-            return [...prev, ...result.data.filter((u) => !existing.has(u._id))]
-          })
-          setFollowedIds((prev) => {
-            const next = new Set(prev)
-            result.data.forEach((u) => { if (u.isFollowing) next.add(u._id) })
-            return next
-          })
-        }
+const doSearch = useCallback(
+  async (reset = true) => {
+    try {
+      const result = await triggerSearch({
+        name: query || undefined,
+        gender: genderFilter !== 'all' ? genderFilter : undefined,
+        cursor: reset ? undefined : cursorRef.current ?? undefined,
+        limit: PAGE_SIZE,
+      }).unwrap()
 
-        cursorRef.current = result.pagination.nextCursor
-        setHasNext(result.pagination.hasNextPage)
-      } catch (err) {
-        console.error('Search failed:', err)
+      if (reset) {
+        setUsers(result.data)
+        // ✅ Always re-sync followedIds from fresh API data on reset
+        setFollowedIds(
+          new Set(result.data.filter((u) => u.isFollowing).map((u) => u._id))
+        )
+      } else {
+        setUsers((prev) => {
+          const existing = new Set(prev.map((u) => u._id))
+          return [...prev, ...result.data.filter((u) => !existing.has(u._id))]
+        })
+        // ✅ Merge new page's isFollowing without touching existing ones
+        setFollowedIds((prev) => {
+          const next = new Set(prev)
+          result.data.forEach((u) => {
+            if (u.isFollowing) next.add(u._id)
+            // ⬇️ also remove if API says not following (important!)
+            else next.delete(u._id)
+          })
+          return next
+        })
       }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [query, genderFilter, triggerSearch]
-  )
+
+      cursorRef.current = result.pagination.nextCursor
+      setHasNext(result.pagination.hasNextPage)
+    } catch (err) {
+      console.error('Search failed:', err)
+    }
+  },
+  [query, genderFilter, triggerSearch]
+)
 
   useEffect(() => { doSearchRef.current = doSearch }, [doSearch])
 

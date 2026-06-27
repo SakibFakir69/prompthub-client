@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useGetallFeedQuery } from "@/src/store/features/feed/feed.features";
 import { PromptCard } from "@/src/components/feed/PromptCard";
 import { PromptCardSkeleton } from "@/src/components/feed/PromptCardSkeleton";
-import CreatePromptBox from "@/src/components/main/CreatePromptBox";
+import CreatePromptBox from "../main/create-prompt";
 
 export default function FeedMainComponent({ initialData }:any) {
 

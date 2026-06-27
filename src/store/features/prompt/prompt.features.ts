@@ -196,5 +196,5 @@ export const {
   useSavePromptMutation,
   useGetSavedPromptsQuery,
   useDeleteSavedPromptMutation,
-  useGetTrendingQuery
+  useTrendingQuery
 } = promptApi

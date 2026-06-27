@@ -1,10 +1,11 @@
-import { useGetTrendingQuery } from "@/src/store/features/prompt/prompt.features";
+'use client'
 
+import { useTrendingQuery } from '../../store/features/prompt/prompt.features';
 
 
 
 export default function RightSidebar() {
-  const { data, isLoading } = useGetTrendingQuery(undefined);
+  const { data, isLoading } = useTrendingQuery(undefined);
 
   const tags       = data?.data?.tags       ?? [];
   const categories = data?.data?.categories ?? [];
