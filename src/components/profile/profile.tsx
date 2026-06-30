@@ -14,6 +14,8 @@ import ProfileTabs from "./profile-tabs";
 import MyPrompt from "./my-prompt";
 import SavedPromptList from "./saved-prompt-list";
 import ProfileSkeleton from "./profile-skeleton";
+// SSR
+
 
 export default function ProfileComponent() {
   const [activeTab, setActiveTab] = useState<"my" | "saved">("my");
@@ -23,8 +25,8 @@ export default function ProfileComponent() {
   const { data: savedData, isLoading: isSavedLoading } = useGetSavedPromptsQuery();
 
   const user = meData?.data;
-  const myPrompts = allPromptsData?.data?.filter((p) => p.profile === user?._id) ?? [];
-  const savedPrompts = savedData?.data ?? [];
+  const myPrompts = allPromptsData?.data;
+  const savedPrompts = savedData?.data ||  [];
 
   // ─── Full page skeleton while user loads ──────────────────────────────────
   if (isMeLoading) {
@@ -59,7 +61,7 @@ export default function ProfileComponent() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-6">
         <section className="bg-white rounded-2xl p-6 border border-gray-100">
-          <ProfileHeader user={user} promptCount={myPrompts.length} />
+          <ProfileHeader user={user} promptCount={myPrompts?.length} />
         </section>
 
         <section className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -67,7 +69,7 @@ export default function ProfileComponent() {
             <ProfileTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              myCount={myPrompts.length}
+              myCount={myPrompts?.length}
               savedCount={savedPrompts.length}
             />
           </div>

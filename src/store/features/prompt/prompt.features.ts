@@ -67,7 +67,7 @@ export const promptApi = baseApi.injectEndpoints({
    
     createPrompt: builder.mutation<PromptResponse, CreatePromptPayload>({
       query: (data) => ({
-        url: '/create-prompt',
+        url: '/prompt/create-prompt',
         method: 'POST',
         data,
       }),
@@ -77,7 +77,7 @@ export const promptApi = baseApi.injectEndpoints({
     // POST /prompt-image — multipart upload, returns { image, imagePublicId }
     uploadPromptImage: builder.mutation<{ image: string; imagePublicId: string }, FormData>({
       query: (data) => ({
-        url: '/prompt-image',
+        url: '/prompt/prompt-image',
         method: 'POST',
         data,
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -144,7 +144,7 @@ export const promptApi = baseApi.injectEndpoints({
    
     savePrompt: builder.mutation<{ success: boolean; message: string }, SavePromptPayload>({
       query: (data) => ({
-        url: '/save-prompt',
+        url: '/prompt/save-prompt',
         method: 'POST',
         data,
       }),
@@ -154,7 +154,7 @@ export const promptApi = baseApi.injectEndpoints({
    
     getSavedPrompts: builder.query<PromptsResponse, void>({
       query: () => ({
-        url: '/save-prompt',
+        url: '/prompt/save-prompt',
         method: 'GET',
       }),
       providesTags: ['SavedPrompt'],
@@ -172,7 +172,7 @@ export const promptApi = baseApi.injectEndpoints({
 
     trending:builder.query<any,void>({
       query:()=>({
-        url:'/trending',
+        url:'/prompt/trending',
         method:"GET"
       }),
     

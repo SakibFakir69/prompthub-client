@@ -46,9 +46,7 @@ export default function FeedMainComponent({ initialData }:any) {
       {/* Topbar */}
       <div className="sticky top-0 z-10 bg-gray-50 border-b border-gray-200 flex items-center justify-between py-3 mb-4">
         <h1 className="text-base font-medium text-gray-900">Home Feed</h1>
-        <button className="flex items-center gap-1.5 text-sm bg-[#FF6B35] text-white px-3 py-1.5 rounded-lg hover:bg-[#e5602e] transition-colors">
-          + New Prompt
-        </button>
+        
       </div>
 
       <CreatePromptBox />
