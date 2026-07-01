@@ -28,7 +28,7 @@ export default function ProfileComponent() {
   const myPrompts = allPromptsData?.data;
   const savedPrompts = savedData?.data ||  [];
 
-  // ─── Full page skeleton while user loads ──────────────────────────────────
+  
   if (isMeLoading) {
     return <ProfileSkeleton />;
   }

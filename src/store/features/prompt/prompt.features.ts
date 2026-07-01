@@ -64,7 +64,7 @@ export interface SavePromptPayload {
 export const promptApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
-   
+
     createPrompt: builder.mutation<PromptResponse, CreatePromptPayload>({
       query: (data) => ({
         url: '/prompt/create-prompt',
@@ -84,7 +84,7 @@ export const promptApi = baseApi.injectEndpoints({
       }),
     }),
 
-    
+
     getAllPrompts: builder.query<PromptsResponse, void>({
       query: () => ({
         url: '/prompt/get-prompt',
@@ -93,7 +93,7 @@ export const promptApi = baseApi.injectEndpoints({
       providesTags: ['Prompt'],
     }),
 
-  
+
     getPromptDetails: builder.query<PromptResponse, string>({
       query: (id) => ({
         url: `/prompt/prompt-details/${id}`,
@@ -102,7 +102,7 @@ export const promptApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, id) => [{ type: 'Prompt', id }],
     }),
 
-   
+
     updatePrompt: builder.mutation<PromptResponse, UpdatePromptPayload>({
       query: ({ id, ...data }) => ({
         url: `/update-prompt/${id}`,
@@ -112,7 +112,7 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Prompt', id }, 'Prompt'],
     }),
 
-    
+
     deletePrompt: builder.mutation<{ success: boolean; message: string }, string>({
       query: (id) => ({
         url: `/delete-prompt/${id}`,
@@ -121,27 +121,61 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: ['Prompt'],
     }),
 
-  
+
     upVote: builder.mutation<VoteResponse, VotePayload>({
       query: (data) => ({
-        url: '/upVote',
+        url: '/prompt/upVote',
         method: 'POST',
         data,
       }),
-      invalidatesTags: (_result, _error, { postId }) => [{ type: 'Prompt', id: postId }],
+      async onQueryStarted({ postId }, { dispatch, queryFulfilled }) {
+        const patchList = dispatch(
+          promptApi.util.updateQueryData('getAllPrompts', undefined, (draft) => {
+            const p = draft.data.find((x) => x._id === postId)
+            if (p) p.upVote += 1
+          })
+        )
+        const patchDetails = dispatch(
+          promptApi.util.updateQueryData('getPromptDetails', postId, (draft) => {
+            draft.data.upVote += 1
+          })
+        )
+        try {
+          await queryFulfilled
+        } catch {
+          patchList.undo()
+          patchDetails.undo()
+        }
+      },
     }),
 
-   
     downVote: builder.mutation<VoteResponse, VotePayload>({
       query: (data) => ({
-        url: '/downVote',
+        url: '/prompt/downVote',
         method: 'POST',
         data,
       }),
-      invalidatesTags: (_result, _error, { postId }) => [{ type: 'Prompt', id: postId }],
+      async onQueryStarted({ postId }, { dispatch, queryFulfilled }) {
+        const patchList = dispatch(
+          promptApi.util.updateQueryData('getAllPrompts', undefined, (draft) => {
+            const p = draft.data.find((x) => x._id === postId)
+            if (p) p.downVote += 1
+          })
+        )
+        const patchDetails = dispatch(
+          promptApi.util.updateQueryData('getPromptDetails', postId, (draft) => {
+            draft.data.downVote += 1
+          })
+        )
+        try {
+          await queryFulfilled
+        } catch {
+          patchList.undo()
+          patchDetails.undo()
+        }
+      },
     }),
 
-   
     savePrompt: builder.mutation<{ success: boolean; message: string }, SavePromptPayload>({
       query: (data) => ({
         url: '/prompt/save-prompt',
@@ -151,7 +185,7 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: ['SavedPrompt'],
     }),
 
-   
+
     getSavedPrompts: builder.query<PromptsResponse, void>({
       query: () => ({
         url: '/prompt/save-prompt',
@@ -160,7 +194,7 @@ export const promptApi = baseApi.injectEndpoints({
       providesTags: ['SavedPrompt'],
     }),
 
-    
+
     deleteSavedPrompt: builder.mutation<{ success: boolean; message: string }, SavePromptPayload>({
       query: (data) => ({
         url: '/save-prompt',
@@ -170,12 +204,12 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: ['SavedPrompt'],
     }),
 
-    trending:builder.query<any,void>({
-      query:()=>({
-        url:'/prompt/trending',
-        method:"GET"
+    trending: builder.query<any, void>({
+      query: () => ({
+        url: '/prompt/trending',
+        method: "GET"
       }),
-    
+
     })
 
   }),
