@@ -5,26 +5,8 @@ import { useGetallFeedQuery } from "@/src/store/features/feed/feed.features";
 import { PromptCard } from "@/src/components/feed/PromptCard";
 import { PromptCardSkeleton } from "@/src/components/feed/PromptCardSkeleton";
 import CreatePromptBox from "../main/create-prompt";
-
-interface FeedItem {
-  _id: string
-  id?: string
-  title: string
-  prompt: string
-  category: string[]
-  tags: string[]
-  image?: string
-  createdBy: { userId: string; name: string; avatar: string }
-  upVote: number
-  downVote: number
-  upVotedBy: string[]
-  createdAt: string
-}
-
-interface InitialData {
-  data?: FeedItem[]
-  nextCursor?: string | null
-}
+import { FeedItem } from "@/src/types/feed/types.feed";
+import { InitialData } from "@/src/types/feed/types.feed";
 
 export default function FeedMainComponent({ initialData }: { initialData?: InitialData }) {
   const [cursor, setCursor] = useState("");

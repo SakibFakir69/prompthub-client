@@ -7,51 +7,10 @@ import Link from 'next/link'
 import { ArrowUp, ArrowDown, Copy, Bookmark, Share2 } from 'lucide-react'
 import { useSavePromptMutation, useUpVoteMutation, useDownVoteMutation } from '@/src/store/features/prompt/prompt.features'
 import { toast } from 'react-toastify'
+import { Prompt } from "@/src/types/feed/types.feed";
+import { timeAgo } from '@/src/utils/time'
+import { Avatar } from './avatar-card'
 
-interface Prompt {
-  _id: string
-  title: string
-  prompt: string
-  category: string[]
-  tags: string[]
-  image?: string
-  createdBy: { userId: string; name: string; avatar: string }
-  upVote: number
-  downVote: number
-  upVotedBy: string[]
-  createdAt: string
-}
-
-function timeAgo(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  const days = Math.floor(hrs / 24)
-  if (days < 30) return `${days}d ago`
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
-function Avatar({ name, avatar }: { name: string; avatar: string }) {
-  const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
-  const [imgError, setImgError] = useState(false)
-
-  if (avatar && !imgError) {
-    return (
-      <Image
-        src={avatar} width={32} height={32} alt={name}
-        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-        onError={() => setImgError(true)}
-      />
-    )
-  }
-  return (
-    <div className="w-8 h-8 rounded-full bg-[#FF6B35] flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
-      {initials}
-    </div>
-  )
-}
 
 interface PromptCardProps {
   prompt: Prompt
