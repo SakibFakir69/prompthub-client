@@ -1,14 +1,14 @@
+// app/explore/page.tsx
+import ExploreMainComponent from "@/src/components/explore/explore-main"
 
-
-import React from 'react'
-
-function page() {
+// No server fetch needed — RTK Query handles data client-side with cursor pagination.
+// Keeping this a thin server shell avoids double-fetching page 1.
+function Page() {
   return (
-    <div>
-        this is explore page
-
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <ExploreMainComponent />
     </div>
   )
 }
 
-export default page
+export default Page
