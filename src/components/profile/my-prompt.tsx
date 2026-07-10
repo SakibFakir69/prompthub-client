@@ -102,12 +102,12 @@ function PromptCard({ prompt, onView }: { prompt: Prompt; onView?: (id: string) 
         <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
           {/* Visibility badge */}
           <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm border ${
-            prompt.visibility
+            prompt?.visibility
               ? "bg-white/80 text-green-700 border-green-200"
               : "bg-white/80 text-gray-500 border-gray-200"
           }`}>
-            {prompt.visibility ? <Eye size={10} /> : <EyeOff size={10} />}
-            {prompt.visibility ? "Public" : "Private"}
+            {prompt?.visibility ? <Eye size={10} /> : <EyeOff size={10} />}
+            {prompt?.visibility ? "Public" : "Private"}
           </span>
 
           {/* Delete button */}
@@ -233,7 +233,7 @@ interface MyPromptProps {
 export default function MyPrompt({ data, isLoading, onView }: MyPromptProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
         {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
       </div>
     );
@@ -248,7 +248,7 @@ export default function MyPrompt({ data, isLoading, onView }: MyPromptProps) {
         {data.length} prompt{data.length !== 1 ? "s" : ""}
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
         {data.map((prompt) => (
           <PromptCard key={prompt._id} prompt={prompt} onView={onView} />
         ))}

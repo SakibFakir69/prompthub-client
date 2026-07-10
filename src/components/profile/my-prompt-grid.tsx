@@ -41,7 +41,7 @@ function SkeletonCard() {
 export default function MyPromptGrid({ prompts, isLoading }: MyPromptGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2   gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -62,7 +62,7 @@ export default function MyPromptGrid({ prompts, isLoading }: MyPromptGridProps) 
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3">
       {prompts.map((prompt) => (
         <MyPromptCard key={prompt._id} prompt={prompt} />
       ))}
