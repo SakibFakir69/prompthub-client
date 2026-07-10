@@ -578,11 +578,11 @@ export default function CreatePromptBox() {
             </form>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-5 py-4 border-t border-gray-100 shrink-0">
+            <div className="flex items-center justify-between px-5 py-3 mb-3 border-t border-gray-100 shrink-0 ">
               <p className="text-xs text-gray-400">
                 <span className="text-red-400">*</span> Required fields
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 sm:-mt-10">
                 <button
                   type="button"
                   onClick={close}
