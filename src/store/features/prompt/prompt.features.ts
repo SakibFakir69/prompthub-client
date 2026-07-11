@@ -14,7 +14,8 @@ export interface Prompt {
   upVote: number
   downVote: number
   createdAt: string
-  updatedAt: string
+  updatedAt: string,
+  visibility:boolean
 }
 
 export interface PromptResponse {
