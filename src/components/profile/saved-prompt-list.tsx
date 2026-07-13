@@ -41,14 +41,14 @@ function SavedCard({ prompt }: { prompt: Prompt }) {
   const handleRemove = async () => {
     if (!confirm("Remove from saved?")) return;
     try {
-      await deleteSaved({ promptId: prompt._id }).unwrap(); // ✅ matches SavePromptPayload
+      await deleteSaved({ promptId: prompt._id }).unwrap(); 
       toast.success("Removed from saved");
     } catch {
       toast.error("Failed to remove");
     }
   };
 
-  // Pick an icon emoji based on first tag
+  
   const firstTag = prompt.tags?.[0]?.toLowerCase() ?? "";
   const icon =
     firstTag.includes("code") || firstTag.includes("dev") ? "💻"
@@ -56,6 +56,8 @@ function SavedCard({ prompt }: { prompt: Prompt }) {
     : firstTag.includes("ai") || firstTag.includes("llm") ? "🤖"
     : firstTag.includes("market") ? "📣"
     : "📄";
+
+    console.log(prompt, ' svd')
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-start gap-3 hover:border-gray-200 transition-colors group">
@@ -68,7 +70,7 @@ function SavedCard({ prompt }: { prompt: Prompt }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-1">
           <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-1">
-            {prompt.title}
+            {prompt?.promptId?.title || prompt?.title}
           </p>
           <button
             onClick={handleRemove}
@@ -93,17 +95,17 @@ function SavedCard({ prompt }: { prompt: Prompt }) {
         </div>
 
         <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">
-          {prompt.prompt}
+          {prompt.promptId?.prompt || prompt.prompt}
         </p>
 
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1 text-xs text-gray-400">
             <ArrowBigUp size={13} className="text-indigo-400" />
-            {prompt.upVote} upvotes
+            {prompt.promptId?.upVote  || prompt?.upVote} upvotes
           </span>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-[#FF6B35] text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}
             {copied ? "Copied!" : "Use"}

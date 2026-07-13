@@ -58,6 +58,7 @@ export function PromptCard({ prompt, onView }: { prompt: Prompt; onView?: (id: s
     new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const hasImage = !!prompt.image;
+  console.log(prompt?.visibility , ' view',prompt)
 
   return (
     <>

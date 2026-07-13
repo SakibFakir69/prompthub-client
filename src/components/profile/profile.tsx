@@ -32,8 +32,7 @@ export default function ProfileComponent() {
   if (isMeLoading) {
     return <ProfileSkeleton />;
   }
-
-  // ─── Unauthenticated ──────────────────────────────────────────────────────
+console.log(savedPrompts , " data")
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-3">
