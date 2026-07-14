@@ -198,7 +198,7 @@ export const promptApi = baseApi.injectEndpoints({
 
     deleteSavedPrompt: builder.mutation<{ success: boolean; message: string }, SavePromptPayload>({
       query: (data) => ({
-        url: '/save-prompt',
+        url: '/prompt/save-prompt',
         method: 'DELETE',
         data,
       }),
