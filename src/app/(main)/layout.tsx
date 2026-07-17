@@ -1,4 +1,5 @@
 
+import FcmInitializer from "@/src/components/fcm/FcmInitializer"
 import LeftSidebar from "@/src/components/main/LeftSidebar"
 import MobileNav from "@/src/components/main/MobileNav"
 import RightSidebar from "@/src/components/main/RightSidebar"
@@ -10,6 +11,8 @@ import RightSidebar from "@/src/components/main/RightSidebar"
 export default function MainRootLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50 flex ">
+
+      <FcmInitializer/>
 
       {/* Left sidebar — sticky, hidden on mobile */}
       <aside className="hidden lg:flex flex-col w-[240px] xl:w-[260px] shrink-0 sticky top-0 h-screen border-r border-gray-200 bg-white overflow-y-auto">

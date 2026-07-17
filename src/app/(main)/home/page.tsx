@@ -1,6 +1,9 @@
 import FeedMainComponent from "@/src/components/feed/feed-main-component";
 
 async function getInitialFeed() {
+
+ 
+
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/feed/feed?cursor=`, {
       cache: "no-store",

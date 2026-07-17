@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -24,6 +24,8 @@ import {
   Trash2,
   LogOut,
 } from 'lucide-react';
+import { useTestPushMutation } from '@/src/store/features/notification/notification.features';
+import FcmInitializer from '../fcm/FcmInitializer';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -116,7 +118,10 @@ const SettingGroup = ({ children }: { children: React.ReactNode }) => (
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
+
+ 
   const router = useRouter();
+  const [testPush] = useTestPushMutation();
 
   const [notifications, setNotifications] = useState<NotificationState>({
     push: true,
@@ -129,6 +134,13 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
     privateAccount: false,
     activityStatus: true,
   });
+
+ 
+  useEffect(()=>{
+
+    testPush();
+
+  },[])
 
   const toggleNotification = (key: keyof NotificationState) => {
     setNotifications(prev => {
@@ -351,6 +363,7 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
               label="Blocked users"
             />
           </SettingGroup>
+          <FcmInitializer/>
 
           {/* ── Appearance ── */}
           <SectionLabel label="Appearance" />
