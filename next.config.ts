@@ -1,13 +1,8 @@
 // next.config.ts
 const nextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',  // allow all external image hosts
-      },
-    ],
-  },
+  remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
+}
 }
 
 export default nextConfig

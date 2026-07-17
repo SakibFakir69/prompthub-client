@@ -12,14 +12,17 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import { useGetMeQuery, useChangePasswordMutation } from "@/src/store/features/auth/auth.features";
 import { useUpdateUserMutation } from "@/src/store/features/users/user.features";
+import { useUploadPromptImageMutation } from "@/src/store/features/prompt/prompt.features";
+import Image from "next/image";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
 const profileSchema = z.object({
-  name:  z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Enter a valid email"),
+  name:  z.string().min(2, "Name must be at least 2 characters").optional(),
+  email: z.string().email("Enter a valid email").optional(),
   bio:   z.string().max(160, "Bio max 160 characters").optional(),
   tags:  z.array(z.string()).optional(),
+  avatar:z.string().optional(),
 });
 
 const passwordSchema = z
@@ -126,13 +129,26 @@ function AvatarSection({
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
     onUpload(file);
+
+    e.target.value = "";
   };
 
   const src = preview ?? avatar;
+  console.log(src  , '-> image src');
 
   return (
     <div className="flex items-center gap-4 py-1">
@@ -144,7 +160,7 @@ function AvatarSection({
         aria-label="Change profile photo"
       >
         {src ? (
-          <img src={src} alt="Avatar" className="w-full h-full rounded-full object-cover border-2 border-white shadow-sm" />
+          <Image width={50} height={10} src={src} alt="Avatar" className="w-full h-full rounded-full object-cover border-2 border-white shadow-sm" />
         ) : (
           <div className="w-full h-full rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium text-2xl border-2 border-white shadow-sm">
             {name?.charAt(0)?.toUpperCase() ?? "?"}
@@ -320,6 +336,7 @@ export default function EditProfilePage() {
   const { data: user, isLoading: isMeLoading } = useGetMeQuery();
   const [updateUser,      { isLoading: isSaving }]   = useUpdateUserMutation();
   const [changePassword,  { isLoading: isPwSaving }] = useChangePasswordMutation();
+  const [uploadImage,     { isLoading: isAvatarUploading }] = useUploadPromptImageMutation();
 
   // ── Profile form ────────────────────────────────────────────────────────────
   const {
@@ -331,20 +348,23 @@ export default function EditProfilePage() {
     formState: { errors: profileErrors, isDirty: isProfileDirty },
   } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { name: "", email: "", bio: "", tags: [] },
+    defaultValues: { name: "", email: "", bio: "", tags: [] ,avatar:"" },
   });
  
-  const {name,email,bio,tags} = user?.data|| {};
-  console.log(name,email,user?.data)
+  const {name,email,bio,tags,avatar} = user?.data|| {};
+
+  console.log(name,email,user?.data,avatar)
 
   
   useEffect(() => {
     if (user) {
+
       reset({
         name:  name  ?? "",
         email: email ?? "",
         bio:   bio   ?? "",          
-        tags:  tags  ?? [],         
+        tags:  tags  ?? [],  
+        avatar: avatar ?? "" 
       });
     }
   }, [user, reset]);
@@ -355,6 +375,7 @@ export default function EditProfilePage() {
   const pct = profileCompleteness(user, bioValue, tagsValue);
 
   const onSaveProfile = async (data: ProfileForm) => {
+
     try {
       await updateUser(data).unwrap();
       toast.success("Profile saved");
@@ -364,8 +385,24 @@ export default function EditProfilePage() {
     }
   };
 
-  const onAvatarUpload = async (_file: File) => {
-    toast.info("Avatar upload — add POST /user/avatar to enable this");
+  // ── Avatar upload ───────────────────────────────────────────────────────────
+  const onAvatarUpload = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", file); // must match the field name your multer middleware expects (req.file)
+
+      const res = await uploadImage(formData).unwrap();
+      console.log(res , 'images');
+   
+
+      await updateUser({ avatar: res?.url } as any).unwrap();
+      toast.success("Profile photo updated");
+    } catch (err: any) {
+
+      console.log(err , ' images')
+
+      toast.error(err?.data?.message ?? "Failed to upload avatar");
+    }
   };
 
   // ── Password form ───────────────────────────────────────────────────────────
@@ -445,9 +482,9 @@ export default function EditProfilePage() {
             <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-4">Identity</p>
             <AvatarSection
               name={user.name}
-              avatar={user.avatar ?? undefined}
+              avatar={avatar ?? undefined}
               onUpload={onAvatarUpload}
-              isUploading={false}
+              isUploading={isAvatarUploading}
             />
           </div>
 

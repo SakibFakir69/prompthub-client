@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { useTestPushMutation } from '@/src/store/features/notification/notification.features';
 import FcmInitializer from '../fcm/FcmInitializer';
+import Image from 'next/image';
+import { useUser } from '@/src/hooks/me/user-data';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,11 +119,12 @@ const SettingGroup = ({ children }: { children: React.ReactNode }) => (
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
+export default function SettingScreen({  onLogout }: SettingScreenProps) {
 
  
   const router = useRouter();
-  const [testPush] = useTestPushMutation();
+  
+  const {user} = useUser();
 
   const [notifications, setNotifications] = useState<NotificationState>({
     push: true,
@@ -135,12 +138,7 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
     activityStatus: true,
   });
 
- 
-  useEffect(()=>{
 
-    testPush();
-
-  },[])
 
   const toggleNotification = (key: keyof NotificationState) => {
     setNotifications(prev => {
@@ -229,7 +227,7 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
             className="flex w-[calc(100%-2rem)] text-left items-center gap-4 p-4 mx-4 mt-6 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all hover:border-gray-200 active:bg-gray-50"
           >
             <img
-              src={user?.avatar || 'https://via.placeholder.com/150'}
+              src={user?.data.avatar || 'https://via.placeholder.com/150'}
               alt={`${user?.name || 'User'}'s avatar`}
               className="bg-gray-200 rounded-full w-14 h-14 object-cover"
             />
@@ -272,7 +270,7 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
           </SettingGroup>
 
           {/* ── Notifications ── */}
-          <SectionLabel label="Notifications" />
+          {/* <SectionLabel label="Notifications" />
           <SettingGroup>
             <RowItem
               icon={<Bell size={17} color="#854F0B" />}
@@ -326,7 +324,7 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
                 />
               }
             />
-          </SettingGroup>
+          </SettingGroup> */}
 
           {/* ── Privacy ── */}
           <SectionLabel label="Privacy" />
@@ -363,7 +361,7 @@ export default function SettingScreen({ user, onLogout }: SettingScreenProps) {
               label="Blocked users"
             />
           </SettingGroup>
-          <FcmInitializer/>
+          
 
           {/* ── Appearance ── */}
           <SectionLabel label="Appearance" />

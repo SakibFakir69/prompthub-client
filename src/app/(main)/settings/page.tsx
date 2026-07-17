@@ -3,8 +3,10 @@
 import SettingScreen from '@/src/components/settings/setting'
 import React from 'react'
 
-function page() {
-  return <SettingScreen/>
+function Page() {
+ 
+
+  return <SettingScreen />
 }
 
-export default page
+export default Page
