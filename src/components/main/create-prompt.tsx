@@ -9,7 +9,7 @@ import {
   useCreatePromptMutation,
   useUploadPromptImageMutation,
 } from '@/src/store/features/prompt/prompt.features'
-import { ToastContainer , toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -24,16 +24,16 @@ const PRESET_CATEGORIES = [
 ]
 
 const MAX_CATEGORIES = 5
-const MAX_TAGS       = 10
-const MAX_IMAGE_MB   = 2
+const MAX_TAGS = 10
+const MAX_IMAGE_MB = 2
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
 const schema = z.object({
-  title:      z.string().min(1, 'Title is required').max(100, 'Max 100 chars'),
-  prompt:     z.string().min(10, 'Prompt must be at least 10 characters').max(5000, 'Max 5000 chars'),
+  title: z.string().min(1, 'Title is required').max(100, 'Max 100 chars'),
+  prompt: z.string().min(10, 'Prompt must be at least 10 characters').max(5000, 'Max 5000 chars'),
   categories: z.array(z.string()).min(1, 'Select at least one category').max(MAX_CATEGORIES, `Max ${MAX_CATEGORIES} categories`),
-  tags:       z.array(z.string()).max(MAX_TAGS, `Max ${MAX_TAGS} tags`),
+  tags: z.array(z.string()).max(MAX_TAGS, `Max ${MAX_TAGS} tags`),
   visibility: z.boolean(),
 })
 
@@ -42,25 +42,24 @@ type FormValues = z.infer<typeof schema>
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function CreatePromptBox() {
-  const [open, setOpen]               = useState(false)
-  const [toast, setToast]             = useState(false)
-  const [imageFile, setImageFile]     = useState<File | null>(null)
+  const [open, setOpen] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [imageError, setImageError]   = useState<string | null>(null)
-  const [apiError, setApiError]       = useState<string | null>(null)
+  const [imageError, setImageError] = useState<string | null>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
 
   // Tag input state (not part of RHF — managed locally, synced via Controller)
-  const [tagInput, setTagInput]       = useState('')
+  const [tagInput, setTagInput] = useState('')
 
   // Custom category state
   const [customCategories, setCustomCategories] = useState<string[]>([])
-  const [categoryInput, setCategoryInput]       = useState('')
+  const [categoryInput, setCategoryInput] = useState('')
   const [showCategoryInput, setShowCategoryInput] = useState(false)
   const categoryInputRef = useRef<HTMLInputElement>(null)
 
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const [createPrompt, { isLoading }]           = useCreatePromptMutation()
+  const [createPrompt, { isLoading }] = useCreatePromptMutation()
   const [uploadImage, { isLoading: uploading }] = useUploadPromptImageMutation()
   const isBusy = isLoading || uploading
 
@@ -75,16 +74,16 @@ export default function CreatePromptBox() {
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title:      '',
-      prompt:     '',
+      title: '',
+      prompt: '',
       categories: [],
-      tags:       [],
+      tags: [],
       visibility: true,
     },
     mode: 'onChange',
   })
 
-  const titleValue  = watch('title')
+  const titleValue = watch('title')
   const promptValue = watch('prompt')
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -105,11 +104,6 @@ export default function CreatePromptBox() {
   }
 
   const close = () => { hardReset(); setOpen(false) }
-
-  const showToastMsg = () => {
-    setToast(true)
-    setTimeout(() => setToast(false), 3000)
-  }
 
   // ── Category handlers ────────────────────────────────────────────────────────
 
@@ -194,32 +188,35 @@ export default function CreatePromptBox() {
   const onSubmit = async (data: FormValues) => {
     setApiError(null)
     try {
-      let image        = ''
+      let image = ''
       let imagePublicId = ''
 
       if (imageFile) {
         const form = new FormData()
         form.append('image', imageFile)
-        const res  = await uploadImage(form).unwrap()
-        image        = res.image
-        imagePublicId = res.imagePublicId
+        const res = await uploadImage(form).unwrap()
+        image = res?.url;
+        imagePublicId = res?.public_id;
+        console.log('UPLOAD RESPONSE:', res)
       }
 
       await createPrompt({
-        title:      data.title.trim(),
-        prompt:     data.prompt.trim(),
-        category:   data.categories,
-        tags:       data.tags,
+        title: data.title.trim(),
+        prompt: data.prompt.trim(),
+        category: data.categories,
+        tags: data.tags,
         visibility: data.visibility,
         image,
         imagePublicId,
       }).unwrap()
 
       close()
-      showToastMsg()
-      
+      toast.success('Prompt published successfully!')
+
     } catch (err: any) {
-      setApiError(err?.data?.message ?? 'Something went wrong. Try again.')
+      const message = err?.data?.message ?? 'Something went wrong. Try again.'
+      setApiError(message)
+      toast.error(message)
     }
   }
 
@@ -310,9 +307,8 @@ export default function CreatePromptBox() {
                   {...register('title')}
                   maxLength={100}
                   placeholder="e.g. Rewrite for clarity"
-                  className={`w-full text-sm px-3 py-2.5 rounded-xl border bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white transition-all ${
-                    errors.title ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
-                  }`}
+                  className={`w-full text-sm px-3 py-2.5 rounded-xl border bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white transition-all ${errors.title ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
+                    }`}
                 />
                 <div className="flex items-center justify-between">
                   {errors.title
@@ -333,9 +329,8 @@ export default function CreatePromptBox() {
                   maxLength={5000}
                   rows={6}
                   placeholder="Paste or write your prompt here. Be specific — the more detail, the more useful it is for others."
-                  className={`w-full text-sm px-3 py-2.5 rounded-xl border bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white transition-all resize-none leading-relaxed ${
-                    errors.prompt ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
-                  }`}
+                  className={`w-full text-sm px-3 py-2.5 rounded-xl border bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white transition-all resize-none leading-relaxed ${errors.prompt ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
+                    }`}
                 />
                 <div className="flex items-center justify-between">
                   {errors.prompt
@@ -366,13 +361,12 @@ export default function CreatePromptBox() {
                           key={cat}
                           type="button"
                           onClick={() => toggleCategory(cat, field.value, field.onChange)}
-                          className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-                            field.value.includes(cat)
+                          className={`text-xs px-3 py-1.5 rounded-full border transition-all ${field.value.includes(cat)
                               ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
                               : field.value.length >= MAX_CATEGORIES
                                 ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-white'
                                 : 'border-gray-200 text-gray-600 hover:border-[#FF6B35] hover:text-[#FF6B35] bg-white'
-                          }`}
+                            }`}
                         >
                           {cat}
                         </button>
@@ -382,11 +376,10 @@ export default function CreatePromptBox() {
                       {customCategories.map((cat) => (
                         <span
                           key={cat}
-                          className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${
-                            field.value.includes(cat)
+                          className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${field.value.includes(cat)
                               ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
                               : 'border-gray-200 text-gray-600 bg-white'
-                          }`}
+                            }`}
                         >
                           <button
                             type="button"
@@ -557,18 +550,17 @@ export default function CreatePromptBox() {
                     <label className="text-xs font-medium text-gray-500">Visibility</label>
                     <div className="flex gap-2">
                       {([
-                        { val: true,  label: 'Public',  Icon: Globe },
-                        { val: false, label: 'Private', Icon: Lock  },
+                        { val: true, label: 'Public', Icon: Globe },
+                        { val: false, label: 'Private', Icon: Lock },
                       ] as const).map(({ val, label, Icon }) => (
                         <button
                           key={label}
                           type="button"
                           onClick={() => field.onChange(val)}
-                          className={`flex-1 flex items-center justify-center gap-2 text-xs py-2.5 rounded-xl border transition-all ${
-                            field.value === val
+                          className={`flex-1 flex items-center justify-center gap-2 text-xs py-2.5 rounded-xl border transition-all ${field.value === val
                               ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
                               : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
-                          }`}
+                            }`}
                         >
                           <Icon className="w-3.5 h-3.5" /> {label}
                         </button>
@@ -613,14 +605,6 @@ export default function CreatePromptBox() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-2 bg-gray-900 text-white text-sm px-4 py-2.5 rounded-xl shadow-lg animate-in fade-in slide-in-from-bottom-2">
-          <span className="text-green-400">✓</span>
-          Prompt published successfully!
         </div>
       )}
     </>
