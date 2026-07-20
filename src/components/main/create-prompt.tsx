@@ -9,6 +9,7 @@ import {
   useCreatePromptMutation,
   useUploadPromptImageMutation,
 } from '@/src/store/features/prompt/prompt.features'
+import { ToastContainer , toast } from 'react-toastify'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -216,6 +217,7 @@ export default function CreatePromptBox() {
 
       close()
       showToastMsg()
+      
     } catch (err: any) {
       setApiError(err?.data?.message ?? 'Something went wrong. Try again.')
     }

@@ -6,7 +6,7 @@ import {
 import { useRegisterDeviceTokenMutation } from "@/src/store/features/notification/notification.features";
 
 export function useFcmToken(isAuthenticated: boolean) {
-  
+
   const [registerDeviceToken] = useRegisterDeviceTokenMutation();
 
   useEffect(() => {
@@ -30,9 +30,9 @@ export function useFcmToken(isAuthenticated: boolean) {
     });
 
     return () => {
-
-      unsubscribe();
-
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
+      }
     };
   }, [isAuthenticated, registerDeviceToken]);
 }
