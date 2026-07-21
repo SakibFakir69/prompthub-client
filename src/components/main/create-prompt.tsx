@@ -10,24 +10,11 @@ import {
   useUploadPromptImageMutation,
 } from '@/src/store/features/prompt/prompt.features'
 import { toast } from 'react-toastify'
+import { MAX_CATEGORIES,MAX_IMAGE_MB,PRESET_CATEGORIES,MAX_TAGS } from '@/src/constants/create-prompt/constant.create-prompt'
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 
-const PRESET_CATEGORIES = [
-  'Writing',
-  'Dev',
-  'Marketing',
-  'Education',
-  'Design',
-  'Research',
-  'Productivity',
-]
 
-const MAX_CATEGORIES = 5
-const MAX_TAGS = 10
-const MAX_IMAGE_MB = 2
 
-// ─── Schema ───────────────────────────────────────────────────────────────────
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Max 100 chars'),
@@ -183,7 +170,6 @@ export default function CreatePromptBox() {
     setImageError(null)
   }
 
-  // ── Submit ───────────────────────────────────────────────────────────────────
 
   const onSubmit = async (data: FormValues) => {
     setApiError(null)
