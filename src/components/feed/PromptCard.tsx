@@ -1,40 +1,62 @@
-
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUp, ArrowDown, Copy, Bookmark, Share2 } from 'lucide-react'
+import { ArrowUp, ArrowDown, Copy, Bookmark, Share2, Loader2 } from 'lucide-react'
 import { useSavePromptMutation, useUpVoteMutation, useDownVoteMutation } from '@/src/store/features/prompt/prompt.features'
 import { toast } from 'react-toastify'
 import { Prompt } from "@/src/types/feed/types.feed";
 import { timeAgo } from '@/src/utils/time'
 import { Avatar } from './avatar-card'
 
+// ADD LOADING ON NUMBER COUNT THIS ISSUE FIX
+
 
 interface PromptCardProps {
   prompt: Prompt
   promptId: string
-  onVoteUpdate?: (promptId: string, type: 'up' | 'down', delta: number) => void
 }
 
-export function PromptCard({ prompt: p, promptId, onVoteUpdate }: PromptCardProps) {
+type VoteState = {
+  userVote: 'up' | 'down' | null
+  upCount: number
+  downCount: number
+}
+
+export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [userVote, setUserVote] = useState<'up' | 'down' | null>(null)
+
+  const [vote, setVote] = useState<VoteState>({
+    userVote: p.userVote ?? null,
+    upCount: p.upVote,
+    downCount: p.downVote,
+  })
+
+  // Which button is currently mid-request, so we know what to spin/disable.
+  const [pending, setPending] = useState<'up' | 'down' | null>(null)
+  // Synchronous lock — prevents a second click firing before React re-renders
+  // with the `pending` state (closes the same race a state-only guard misses).
+  const lockRef = useRef(false)
+
+  useEffect(() => {
+    setVote({
+      userVote: p.userVote ?? null,
+      upCount: p.upVote,
+      downCount: p.downVote,
+    })
+  }, [p.userVote, p.upVote, p.downVote])
 
   const [savePrompt, { isLoading: isSaving }] = useSavePromptMutation()
-  const [upVote, { isLoading: isLoadingUpVote }] = useUpVoteMutation()
-  const [downVote, { isLoading: isLoadingDownVote }] = useDownVoteMutation()
+  const [upVote] = useUpVoteMutation()
+  const [downVote] = useDownVoteMutation()
 
   const handleSavedPrompt = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    console.log({promptId:p._id} , ' saved prompt');
     try {
       const res = await savePrompt({ prompt: p }).unwrap();
-      console.log({promptId:p._id} , ' saved prompt');
-
       setSaved(prev => !prev)
       if (res.success) toast.success(res.message)
     } catch (error: any) {
@@ -45,48 +67,51 @@ export function PromptCard({ prompt: p, promptId, onVoteUpdate }: PromptCardProp
   const handelUpVote = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (isLoadingUpVote || isLoadingDownVote) return
-
-    const wasUp = userVote === 'up'
-    const wasDown = userVote === 'down'
-
-    // Optimistic local update
-    onVoteUpdate?.(p._id, 'up', wasUp ? -1 : 1)
-    if (wasDown) onVoteUpdate?.(p._id, 'down', -1)
-    setUserVote(wasUp ? null : 'up')
+    if (lockRef.current) return
+    lockRef.current = true
+    setPending('up')
 
     try {
+      // No optimistic guess here — UI stays exactly as-is until the
+      // server tells us the real numbers. That's what removes the
+      // "flash to a wrong count" behavior entirely.
       const res = await upVote({ postId: p._id }).unwrap()
-      toast.success(res?.message)
+      if (res?.data) {
+        setVote({
+          userVote: res.data.userVote ?? null,
+          upCount: res.data.upVote,
+          downCount: res.data.downVote,
+        })
+      }
     } catch (error: any) {
-      // rollback
-      onVoteUpdate?.(p._id, 'up', wasUp ? 1 : -1)
-      if (wasDown) onVoteUpdate?.(p._id, 'down', 1)
-      setUserVote(wasUp ? 'up' : wasDown ? 'down' : null)
       toast.error(error?.data?.message || 'Something went wrong')
+    } finally {
+      lockRef.current = false
+      setPending(null)
     }
   }
 
   const handelDownVote = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (isLoadingUpVote || isLoadingDownVote) return
-
-    const wasDown = userVote === 'down'
-    const wasUp = userVote === 'up'
-
-    onVoteUpdate?.(p._id, 'down', wasDown ? -1 : 1)
-    if (wasUp) onVoteUpdate?.(p._id, 'up', -1)
-    setUserVote(wasDown ? null : 'down')
+    if (lockRef.current) return
+    lockRef.current = true
+    setPending('down')
 
     try {
       const res = await downVote({ postId: p._id }).unwrap()
-      toast.success(res?.message)
+      if (res?.data) {
+        setVote({
+          userVote: res.data.userVote ?? null,
+          upCount: res.data.upVote,
+          downCount: res.data.downVote,
+        })
+      }
     } catch (error: any) {
-      onVoteUpdate?.(p._id, 'down', wasDown ? 1 : -1)
-      if (wasUp) onVoteUpdate?.(p._id, 'up', 1)
-      setUserVote(wasDown ? 'down' : wasUp ? 'up' : null)
       toast.error(error?.data?.message || 'Something went wrong')
+    } finally {
+      lockRef.current = false
+      setPending(null)
     }
   }
 
@@ -110,6 +135,8 @@ export function PromptCard({ prompt: p, promptId, onVoteUpdate }: PromptCardProp
       toast.success('Link copied')
     }
   }
+
+  const isVoting = pending !== null
 
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-4 hover:border-gray-200 transition-colors">
@@ -151,33 +178,41 @@ export function PromptCard({ prompt: p, promptId, onVoteUpdate }: PromptCardProp
         <div className="flex items-center gap-1.5">
           <button
             onClick={handelUpVote}
-            disabled={isLoadingUpVote || isLoadingDownVote}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 ${
-              userVote === 'up'
+            disabled={isVoting}
+            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+              vote.userVote === 'up'
                 ? 'border-[#FF6B35] bg-orange-50 text-[#FF6B35]'
                 : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
             }`}
             aria-label="Upvote"
           >
-            <ArrowUp size={15} strokeWidth={2.25} />
+            {pending === 'up' ? (
+              <Loader2 size={14} strokeWidth={2.25} className="animate-spin" />
+            ) : (
+              <ArrowUp size={15} strokeWidth={2.25} />
+            )}
           </button>
           <span className="text-[12px] text-gray-500 min-w-[14px] text-center">
-            {p.upVote}
+            {vote.upCount}
           </span>
           <button
             onClick={handelDownVote}
-            disabled={isLoadingUpVote || isLoadingDownVote}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 ${
-              userVote === 'down'
+            disabled={isVoting}
+            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+              vote.userVote === 'down'
                 ? 'border-gray-400 bg-gray-100 text-gray-700'
                 : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
             }`}
             aria-label="Downvote"
           >
-            <ArrowDown size={15} strokeWidth={2.25} />
+            {pending === 'down' ? (
+              <Loader2 size={14} strokeWidth={2.25} className="animate-spin" />
+            ) : (
+              <ArrowDown size={15} strokeWidth={2.25} />
+            )}
           </button>
           <span className="text-[12px] text-gray-500 min-w-[14px] text-center">
-            {p.downVote}
+            {vote.downCount}
           </span>
         </div>
 

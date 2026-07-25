@@ -14,7 +14,7 @@ import { EmptyState } from './explore-empty-state'
 
 
 interface ExploreMainComponentProps {
-  data?: any // SSR fallback, optional
+  data?: any 
 }
 
 function ExploreMainComponent({ data }: ExploreMainComponentProps) {
@@ -35,7 +35,6 @@ function ExploreMainComponent({ data }: ExploreMainComponentProps) {
     setItems([])
   }, [debouncedSearch])
 
-  // append/replace when new data arrives
   useEffect(() => {
     if (!result) return
     setItems(prev => (cursor ? [...prev, ...result.data] : result.data))

@@ -1,7 +1,5 @@
-
 import { baseApi } from "../../baseApi"
-
-
+import { feedApi } from "../feed/feed.features" // adjust path to match your folder structure
 
 export interface Prompt {
   _id: string
@@ -15,7 +13,7 @@ export interface Prompt {
   downVote: number
   createdAt: string
   updatedAt: string,
-  visibility:boolean
+  visibility: boolean
 }
 
 export interface PromptResponse {
@@ -41,7 +39,7 @@ export interface CreatePromptPayload {
   prompt: string
   tags?: string[]
   profile?: string
-  image?: string           // Cloudinary URL after upload
+  image?: string
   imagePublicId?: string
 }
 
@@ -61,10 +59,8 @@ export interface SavePromptPayload {
   promptId: string
 }
 
-
 export const promptApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-
 
     createPrompt: builder.mutation<PromptResponse, CreatePromptPayload>({
       query: (data) => ({
@@ -73,9 +69,22 @@ export const promptApi = baseApi.injectEndpoints({
         data,
       }),
       invalidatesTags: ['Prompt'],
+
+   
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data: newPrompt } = await queryFulfilled
+          dispatch(
+            feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
+              draft.data.unshift(newPrompt.data)
+            })
+          )
+        } catch (err) {
+          console.error('Failed to patch feed cache on create', err)
+        }
+      },
     }),
 
-    // POST /prompt-image — multipart upload, returns { image, imagePublicId }
     uploadPromptImage: builder.mutation<{ image: string; imagePublicId: string }, FormData>({
       query: (data) => ({
         url: '/prompt/prompt-image',
@@ -85,7 +94,6 @@ export const promptApi = baseApi.injectEndpoints({
       }),
     }),
 
-
     getAllPrompts: builder.query<PromptsResponse, void>({
       query: () => ({
         url: '/prompt/get-prompt',
@@ -94,7 +102,6 @@ export const promptApi = baseApi.injectEndpoints({
       providesTags: ['Prompt'],
     }),
 
-
     getPromptDetails: builder.query<PromptResponse, string>({
       query: (id) => ({
         url: `/prompt/prompt-details/${id}`,
@@ -102,7 +109,6 @@ export const promptApi = baseApi.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [{ type: 'Prompt', id }],
     }),
-
 
     updatePrompt: builder.mutation<PromptResponse, UpdatePromptPayload>({
       query: ({ id, ...data }) => ({
@@ -113,7 +119,6 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Prompt', id }, 'Prompt'],
     }),
 
-
     deletePrompt: builder.mutation<{ success: boolean; message: string }, string>({
       query: (id) => ({
         url: `/prompt/delete-prompt/${id}`,
@@ -121,7 +126,6 @@ export const promptApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Prompt'],
     }),
-
 
     upVote: builder.mutation<VoteResponse, VotePayload>({
       query: (data) => ({
@@ -141,11 +145,19 @@ export const promptApi = baseApi.injectEndpoints({
             draft.data.upVote += 1
           })
         )
+        // NEW: also patch feed cache
+        const patchFeed = dispatch(
+          feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
+            const p = draft.data.find((x: any) => x._id === postId)
+            if (p) p.upVote += 1
+          })
+        )
         try {
           await queryFulfilled
         } catch {
           patchList.undo()
           patchDetails.undo()
+          patchFeed.undo()
         }
       },
     }),
@@ -168,11 +180,19 @@ export const promptApi = baseApi.injectEndpoints({
             draft.data.downVote += 1
           })
         )
+        // NEW: also patch feed cache
+        const patchFeed = dispatch(
+          feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
+            const p = draft.data.find((x: any) => x._id === postId)
+            if (p) p.downVote += 1
+          })
+        )
         try {
           await queryFulfilled
         } catch {
           patchList.undo()
           patchDetails.undo()
+          patchFeed.undo()
         }
       },
     }),
@@ -186,7 +206,6 @@ export const promptApi = baseApi.injectEndpoints({
       invalidatesTags: ['SavedPrompt'],
     }),
 
-
     getSavedPrompts: builder.query<PromptsResponse, void>({
       query: () => ({
         url: '/prompt/save-prompt',
@@ -194,7 +213,6 @@ export const promptApi = baseApi.injectEndpoints({
       }),
       providesTags: ['SavedPrompt'],
     }),
-
 
     deleteSavedPrompt: builder.mutation<{ success: boolean; message: string }, SavePromptPayload>({
       query: (data) => ({
@@ -210,14 +228,11 @@ export const promptApi = baseApi.injectEndpoints({
         url: '/prompt/trending',
         method: "GET"
       }),
-
     })
 
   }),
   overrideExisting: false,
 })
-
-// ─── Hooks ────────────────────────────────────────────────────────────────────
 
 export const {
   useCreatePromptMutation,

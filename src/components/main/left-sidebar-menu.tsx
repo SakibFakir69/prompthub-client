@@ -2,13 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Home, Compass, Users, User, Settings, type LucideIcon } from 'lucide-react'
 
-import { Home, Compass, Bookmark, User, Settings } from 'lucide-react'
+interface NavItem {
+  href: string
+  icon: LucideIcon
+  label: string
+}
 
-const navItems = [
+const navItems: NavItem[] = [
   { href: '/home', icon: Home, label: 'Home' },
   { href: '/explore', icon: Compass, label: 'Explore' },
-  { href: '/saved', icon: Bookmark, label: 'Saved' },
+  { href: '/people', icon: Users, label: 'People' },
   { href: '/profile', icon: User, label: 'Profile' },
   { href: '/settings', icon: Settings, label: 'Settings' },
 ]

@@ -226,7 +226,9 @@ export default function SettingScreen({  onLogout }: SettingScreenProps) {
             type="button"
             className="flex w-[calc(100%-2rem)] text-left items-center gap-4 p-4 mx-4 mt-6 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all hover:border-gray-200 active:bg-gray-50"
           >
-            <img
+            <Image
+            height={100}
+            width={100}
               src={user?.data.avatar || 'https://via.placeholder.com/150'}
               alt={`${user?.name || 'User'}'s avatar`}
               className="bg-gray-200 rounded-full w-14 h-14 object-cover"
