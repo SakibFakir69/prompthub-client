@@ -61,7 +61,7 @@ export default function ProfileHeader({ user, promptCount }: ProfileHeaderProps)
       <div className="flex gap-2 w-full max-w-xs">
         <Link
           href="/profile/edit"
-          className="flex-1 text-center text-sm font-semibold py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-700 transition-colors"
+          className="flex-1 text-center text-sm font-semibold py-2.5 bg-[#E46549] text-white rounded-xl hover:bg-[#E46549] transition-colors"
         >
           Edit profile
         </Link>

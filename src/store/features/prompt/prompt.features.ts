@@ -11,8 +11,9 @@ export interface Prompt {
   imagePublicId?: string
   upVote: number
   downVote: number
+  userVote?: 'up' | 'down' | null
   createdAt: string
-  updatedAt: string,
+  updatedAt: string
   visibility: boolean
 }
 
@@ -31,7 +32,7 @@ export interface PromptsResponse {
 export interface VoteResponse {
   success: boolean
   message: string
-  data: { upVote: number; downVote: number }
+  data: { upVote: number; downVote: number; userVote: 'up' | 'down' | null }
 }
 
 export interface CreatePromptPayload {
@@ -59,6 +60,34 @@ export interface SavePromptPayload {
   promptId: string
 }
 
+// Mirrors the backend's toggle/switch/add state machine exactly,
+// so the optimistic guess matches what the server will actually compute.
+function applyOptimisticVote(p: Prompt, direction: 'up' | 'down') {
+  const prev = p.userVote ?? null
+
+  if (prev === direction) {
+    // toggle off
+    if (direction === 'up') p.upVote -= 1
+    else p.downVote -= 1
+    p.userVote = null
+  } else if (prev === null) {
+    // fresh vote
+    if (direction === 'up') p.upVote += 1
+    else p.downVote += 1
+    p.userVote = direction
+  } else {
+    // switch
+    if (direction === 'up') {
+      p.upVote += 1
+      p.downVote -= 1
+    } else {
+      p.downVote += 1
+      p.upVote -= 1
+    }
+    p.userVote = direction
+  }
+}
+
 export const promptApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
@@ -69,8 +98,6 @@ export const promptApi = baseApi.injectEndpoints({
         data,
       }),
       invalidatesTags: ['Prompt'],
-
-   
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           const { data: newPrompt } = await queryFulfilled
@@ -137,23 +164,53 @@ export const promptApi = baseApi.injectEndpoints({
         const patchList = dispatch(
           promptApi.util.updateQueryData('getAllPrompts', undefined, (draft) => {
             const p = draft.data.find((x) => x._id === postId)
-            if (p) p.upVote += 1
+            if (p) applyOptimisticVote(p, 'up')
           })
         )
         const patchDetails = dispatch(
           promptApi.util.updateQueryData('getPromptDetails', postId, (draft) => {
-            draft.data.upVote += 1
+            applyOptimisticVote(draft.data, 'up')
           })
         )
-        // NEW: also patch feed cache
         const patchFeed = dispatch(
           feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
             const p = draft.data.find((x: any) => x._id === postId)
-            if (p) p.upVote += 1
+            if (p) applyOptimisticVote(p, 'up')
           })
         )
+
         try {
-          await queryFulfilled
+          const { data: res } = await queryFulfilled
+          // Reconcile: overwrite the optimistic guess with real server truth.
+          if (res?.data) {
+            dispatch(
+              promptApi.util.updateQueryData('getAllPrompts', undefined, (draft) => {
+                const p = draft.data.find((x) => x._id === postId)
+                if (p) {
+                  p.upVote = res.data.upVote
+                  p.downVote = res.data.downVote
+                  p.userVote = res.data.userVote
+                }
+              })
+            )
+            dispatch(
+              promptApi.util.updateQueryData('getPromptDetails', postId, (draft) => {
+                draft.data.upVote = res.data.upVote
+                draft.data.downVote = res.data.downVote
+                draft.data.userVote = res.data.userVote
+              })
+            )
+            dispatch(
+              feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
+                const p = draft.data.find((x: any) => x._id === postId)
+                if (p) {
+                  p.upVote = res.data.upVote
+                  p.downVote = res.data.downVote
+                  p.userVote = res.data.userVote
+                }
+              })
+            )
+          }
         } catch {
           patchList.undo()
           patchDetails.undo()
@@ -172,23 +229,52 @@ export const promptApi = baseApi.injectEndpoints({
         const patchList = dispatch(
           promptApi.util.updateQueryData('getAllPrompts', undefined, (draft) => {
             const p = draft.data.find((x) => x._id === postId)
-            if (p) p.downVote += 1
+            if (p) applyOptimisticVote(p, 'down')
           })
         )
         const patchDetails = dispatch(
           promptApi.util.updateQueryData('getPromptDetails', postId, (draft) => {
-            draft.data.downVote += 1
+            applyOptimisticVote(draft.data, 'down')
           })
         )
-        // NEW: also patch feed cache
         const patchFeed = dispatch(
           feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
             const p = draft.data.find((x: any) => x._id === postId)
-            if (p) p.downVote += 1
+            if (p) applyOptimisticVote(p, 'down')
           })
         )
+
         try {
-          await queryFulfilled
+          const { data: res } = await queryFulfilled
+          if (res?.data) {
+            dispatch(
+              promptApi.util.updateQueryData('getAllPrompts', undefined, (draft) => {
+                const p = draft.data.find((x) => x._id === postId)
+                if (p) {
+                  p.upVote = res.data.upVote
+                  p.downVote = res.data.downVote
+                  p.userVote = res.data.userVote
+                }
+              })
+            )
+            dispatch(
+              promptApi.util.updateQueryData('getPromptDetails', postId, (draft) => {
+                draft.data.upVote = res.data.upVote
+                draft.data.downVote = res.data.downVote
+                draft.data.userVote = res.data.userVote
+              })
+            )
+            dispatch(
+              feedApi.util.updateQueryData('getallFeed', '', (draft: any) => {
+                const p = draft.data.find((x: any) => x._id === postId)
+                if (p) {
+                  p.upVote = res.data.upVote
+                  p.downVote = res.data.downVote
+                  p.userVote = res.data.userVote
+                }
+              })
+            )
+          }
         } catch {
           patchList.undo()
           patchDetails.undo()

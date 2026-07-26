@@ -24,7 +24,7 @@ export function NavLinks() {
   return (
     <nav className="flex flex-col gap-1 flex-1">
       {navItems.map(({ href, icon: Icon, label }) => {
-        // Checks if path starts with href for nested routing (e.g. /profile/edit)
+        
         const isActive = pathname === href || (href !== '/home' && pathname?.startsWith(href))
 
         return (

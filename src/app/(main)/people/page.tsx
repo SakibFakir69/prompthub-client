@@ -9,14 +9,17 @@ interface JwtPayload {
   exp?: number;
 }
 
-async function getUsersSearchData(cookieHeader: string) {
+async function getUsersSearchData(cookieHeader: string, accessToken?: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/people/search`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Cookie: cookieHeader, // ✅ forwards accessToken cookie to Express
+        Cookie: cookieHeader,
+        // FIX: forward the token explicitly too, in case the auth
+        // middleware reads Authorization instead of / in addition to cookies
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
       cache: "no-store",
     }
@@ -30,18 +33,15 @@ async function getUsersSearchData(cookieHeader: string) {
 }
 
 async function Page() {
-  // 1. ✅ Await the cookies() call itself
   const cookieStore = await cookies();
 
-  // 2. ✅ Read accessToken cookie (no await needed here anymore)
   const accessToken = cookieStore?.get("accessToken")?.value;
 
-  // 3. ✅ Forward all cookies to backend (no await needed here anymore)
-  const cookieHeader = cookieStore.getAll()
+  const cookieHeader = cookieStore
+    .getAll()
     .map((c) => `${c.name}=${c.value}`)
-    .join('; ');
+    .join("; ");
 
-  // ✅ Decode JWT to get currentUserId
   let currentUserId: string | undefined;
   if (accessToken) {
     try {
@@ -52,7 +52,7 @@ async function Page() {
     }
   }
 
-  const data = await getUsersSearchData(cookieHeader);
+  const data = await getUsersSearchData(cookieHeader, accessToken);
 
   return <PeopleSearch data={data} currentUserId={currentUserId} />;
 }
