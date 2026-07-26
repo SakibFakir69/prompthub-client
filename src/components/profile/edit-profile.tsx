@@ -179,7 +179,7 @@ function AvatarSection({
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={isUploading}
-          className="text-xs font-medium text-indigo-600 hover:text-indigo-700 mt-1 disabled:opacity-50 transition-colors"
+          className="text-xs font-medium text-[#E46549] hover:text-[#E46549] mt-1 disabled:opacity-50 transition-colors"
         >
           {isUploading ? "Uploading…" : "Change photo"}
         </button>
@@ -216,9 +216,10 @@ function TagsInput({ value, onChange }: { value: string[]; onChange: (t: string[
       onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement)?.focus()}
     >
       {value.map((tag) => (
-        <span key={tag} className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-full border border-indigo-100">
+        <span key={tag} className="flex items-center gap-1 text-xs font-medium px-2.5 py-1 bg-[#edeceb] text-[#dc6d54] rounded-full border border-indigo-100">
           #{tag}
-          <button type="button" onClick={() => remove(tag)} className="text-indigo-300 hover:text-indigo-600 transition-colors" aria-label={`Remove ${tag}`}>
+          <button type="button" onClick={() => remove(tag)} className="text-[#E46549]
+          hover:text-[#E46549] transition-colors" aria-label={`Remove ${tag}`}>
             <X size={10} />
           </button>
         </span>
@@ -248,8 +249,9 @@ function CompletenessBar({ pct }: { pct: number }) {
   if (!incomplete) return null;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-100 rounded-2xl">
-      <Sparkles size={15} className="text-indigo-400 flex-shrink-0" />
+    <div className="flex items-center gap-3 px-4 py-3 bg-white border
+     border-gray-100 rounded-2xl">
+      <Sparkles size={15} className="text-[#E46549] flex-shrink-0" />
       <div className="flex-1">
         <p className="text-xs font-medium text-gray-700 mb-1.5">
           Profile is {pct}% complete — add a bio to get discovered
@@ -258,7 +260,7 @@ function CompletenessBar({ pct }: { pct: number }) {
           {Array.from({ length: steps }).map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full ${i < filled ? "bg-indigo-500" : "bg-gray-100"}`}
+              className={`h-1 flex-1 rounded-full ${i < filled ? "bg-[#E46549]" : "bg-gray-100"}`}
             />
           ))}
         </div>
@@ -462,7 +464,8 @@ export default function EditProfilePage() {
           form="profile-form"
           type="submit"
           disabled={isSaving || !isProfileDirty}
-          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-700 disabled:opacity-40 transition-colors"
+          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2
+           bg-[#E46549] text-white rounded-xl hover:bg-[#d76c54] disabled:opacity-40 transition-colors"
         >
           {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
           {isSaving ? "Saving…" : "Save changes"}
@@ -537,7 +540,7 @@ export default function EditProfilePage() {
               <button
                 type="submit"
                 disabled={isSaving || !isProfileDirty}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium bg-gray-900 text-white rounded-xl hover:bg-gray-700 disabled:opacity-40 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium bg-[#E46549] text-white rounded-xl hover:bg-[#d36850] disabled:opacity-40 transition-colors"
               >
                 {isSaving ? <><Loader2 size={14} className="animate-spin" /> Saving…</> : "Save changes"}
               </button>
@@ -611,7 +614,7 @@ export default function EditProfilePage() {
             <button
               type="submit"
               disabled={isPwSaving}
-              className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-medium bg-gray-900 text-white rounded-xl hover:bg-gray-700 disabled:opacity-50 transition-colors"
+              className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-medium bg-[#E46549] text-white rounded-xl hover:bg-[#cf654d] disabled:opacity-50 transition-colors"
             >
               {isPwSaving ? <><Loader2 size={14} className="animate-spin" /> Updating…</> : "Update password"}
             </button>
