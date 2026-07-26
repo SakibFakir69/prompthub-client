@@ -28,7 +28,7 @@ export default function RightSidebar() {
             {categories.map(({ category }: { category: string }) => (
               <button
                 key={category}
-                className="text-xs px-3 py-1 rounded-full border border-gray-200 text-gray-600 hover:border-[#FF6B35] hover:text-[#FF6B35] transition-colors"
+                className="text-xs px-3 py-1 rounded-full border  border-[#d4c5c2]  hover:border-[#FF6B35] text-[#eb7245] transition-colors"
               >
                 {category}
               </button>
@@ -60,10 +60,10 @@ export default function RightSidebar() {
                 key={tag}
                 className="flex items-center justify-between py-1 cursor-pointer group"
               >
-                <span className="text-sm text-gray-600 group-hover:text-[#FF6B35] transition-colors">
+                <span className="text-sm text-[#E46549] group-hover:text-[#FF6B35] transition-colors">
                   #{tag}
                 </span>
-                <span className="text-xs text-gray-400">{count} uses</span>
+                <span className="text-xs text-[#E46549]">{count} uses</span>
               </div>
             ))}
           </div>
