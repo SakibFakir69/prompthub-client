@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from 'react'
@@ -9,12 +8,8 @@ import { useDebounce } from '@/src/hooks/use-debounce'
 import { CardSkeleton } from './explore-skeleton'
 import { EmptyState } from './explore-empty-state'
 
-
-
-
-
 interface ExploreMainComponentProps {
-  data?: any 
+  data?: any
 }
 
 function ExploreMainComponent({ data }: ExploreMainComponentProps) {
@@ -24,27 +19,45 @@ function ExploreMainComponent({ data }: ExploreMainComponentProps) {
   const debouncedSearch = useDebounce(searchInput, 400)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
+  // Tracks which cursor's page has already been merged into `items`.
+  // Prevents duplicate merges from React Strict Mode's double-invoke
+  // (dev only) or a re-firing IntersectionObserver.
+  const lastMergedCursorRef = useRef<string | null | undefined>(undefined)
+
   const { data: result, isFetching, isLoading } = useExploreQuery({
     cursor,
     search: debouncedSearch,
   })
-  console.log(data,'data');
+
   // reset list on new search
   useEffect(() => {
     setCursor(null)
     setItems([])
+    lastMergedCursorRef.current = undefined
   }, [debouncedSearch])
 
+  // merge new page into items, deduped by _id
   useEffect(() => {
     if (!result) return
-    setItems(prev => (cursor ? [...prev, ...result.data] : result.data))
-  }, [result])
+    if (lastMergedCursorRef.current === cursor) return // already merged this page
+    lastMergedCursorRef.current = cursor
+
+    setItems(prev => {
+      const merged = cursor ? [...prev, ...result.data] : result.data
+      const seen = new Set<string>()
+      return merged.filter((item: any) => {
+        if (seen.has(item._id)) return false
+        seen.add(item._id)
+        return true
+      })
+    })
+  }, [result, cursor])
 
   const loadMore = useCallback(() => {
-    if (!isFetching && result?.nextCursor) {
+    if (!isFetching && result?.nextCursor && result.nextCursor !== cursor) {
       setCursor(result.nextCursor)
     }
-  }, [isFetching, result])
+  }, [isFetching, result, cursor])
 
   // infinite scroll observer
   useEffect(() => {
@@ -72,7 +85,6 @@ function ExploreMainComponent({ data }: ExploreMainComponentProps) {
 
   const showInitialSkeleton = isLoading && items.length === 0
   const showEmpty = !isLoading && !isFetching && items.length === 0
-  console.log(result , 'result')
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
