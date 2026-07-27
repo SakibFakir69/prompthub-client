@@ -1,6 +1,9 @@
-import Link from 'next/link';
+'use client'
+import { useRouter } from 'next/navigation';
 
 export default function NotFound() {
+
+  const router = useRouter();
   
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30 px-4 sm:px-6 lg:px-8">
@@ -38,15 +41,15 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           
-          <Link
-            href="/"
+          <button
+            onClick={()=> router.back()}
             className="inline-flex justify-center items-center py-3 px-6 rounded-xl shadow-sm text-sm font-semibold text-white bg-[#FF6B35] hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B35] transition-all duration-200"
           >
             <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1m-2 0h2" />
             </svg>
             Back to Home
-          </Link>
+          </button>
           
           
         </div>
