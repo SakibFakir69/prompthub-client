@@ -1,4 +1,4 @@
-import type { SearchUser, SearchUsersResponse } from '@/src/features/people/peopleApi'
+import type { SearchUser, SearchUsersResponse } from '@/src/store/features/people/people.features'
 
 
 interface PeopleSearchProps {

@@ -124,9 +124,9 @@ export function PromptCard({ prompt, onView }: { prompt: Prompt; onView?: (id: s
 
         {/* Card body */}
         <div className="p-4 flex flex-col gap-2.5 flex-1">
-          {prompt.category?.length > 0 && (
+          {prompt?.category?.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {prompt.category.slice(0, 3).map((cat) => (
+              {prompt?.category.slice(0, 3).map((cat) => (
                 <span
                   key={cat}
                   className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FF6B35]/8 text-[#FF6B35] border border-[#FF6B35]/15"

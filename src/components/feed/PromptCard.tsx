@@ -14,12 +14,14 @@ import { Avatar } from './avatar-card'
 
 
 interface PromptCardProps {
-  prompt: Prompt
-  promptId: string
+  prompt: Prompt;
+  promptId: string;
+  userVote?: "up" | "down" | null;
+  onVoteUpdate?: (promptId: string, type: "up" | "down", delta: number) => void;
 }
 
 type VoteState = {
-  userVote: 'up' | 'down' | null
+  userVote?: "up" | "down" | null;
   upCount: number
   downCount: number
 }
@@ -56,7 +58,7 @@ export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
     e.preventDefault()
     e.stopPropagation()
     try {
-      const res = await savePrompt({ prompt: p }).unwrap();
+      const res = await savePrompt({ promptId: p._id }).unwrap();
       setSaved(prev => !prev)
       if (res.success) toast.success(res.message)
     } catch (error: any) {
@@ -129,7 +131,7 @@ export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
     e.stopPropagation()
     const url = `${window.location.origin}/prompt-details/${promptId}`
     if (navigator.share) {
-      navigator.share({ title: p.title, url }).catch(() => {})
+      navigator.share({ title: p.title, url }).catch(() => { })
     } else {
       navigator.clipboard.writeText(url)
       toast.success('Link copied')
@@ -179,11 +181,10 @@ export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
           <button
             onClick={handelUpVote}
             disabled={isVoting}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-              vote.userVote === 'up'
-                ? 'border-[#FF6B35] bg-orange-50 text-[#FF6B35]'
-                : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
-            }`}
+            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${vote.userVote === 'up'
+              ? 'border-[#FF6B35] bg-orange-50 text-[#FF6B35]'
+              : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
+              }`}
             aria-label="Upvote"
           >
             {pending === 'up' ? (
@@ -198,11 +199,10 @@ export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
           <button
             onClick={handelDownVote}
             disabled={isVoting}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-              vote.userVote === 'down'
-                ? 'border-gray-400 bg-gray-100 text-gray-700'
-                : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
-            }`}
+            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${vote.userVote === 'down'
+              ? 'border-gray-400 bg-gray-100 text-gray-700'
+              : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
+              }`}
             aria-label="Downvote"
           >
             {pending === 'down' ? (
@@ -234,11 +234,10 @@ export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
           <button
             onClick={handleSavedPrompt}
             disabled={isSaving}
-            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-50 ${
-              saved
-                ? 'border-[#FF6B35] bg-orange-50 text-[#FF6B35]'
-                : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
-            }`}
+            className={`w-7 h-7 flex items-center justify-center rounded-lg border transition-colors disabled:opacity-50 ${saved
+              ? 'border-[#FF6B35] bg-orange-50 text-[#FF6B35]'
+              : 'border-gray-100 text-gray-400 hover:bg-gray-50 hover:text-gray-700'
+              }`}
             aria-label="Save prompt"
           >
             <Bookmark size={14} strokeWidth={2.25} fill={saved ? '#FF6B35' : 'none'} />

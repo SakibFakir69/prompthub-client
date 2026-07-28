@@ -16,7 +16,7 @@ interface IUser {
 }
 
 interface ProfileHeaderProps {
-  user: IUser;
+  user: IUser | any;
   promptCount: number;
 }
 

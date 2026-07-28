@@ -10,6 +10,8 @@ import { useGoogleLoginMutation } from "@/src/store/features/auth/auth.features"
 import { useRegisterUserMutation } from "@/src/store/features/users/user.features";
 import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
 import Image from "next/image";
+import { toast } from "react-toastify";
+
 type registerType = z.infer<typeof registerUserSchemaValidation>
 
 

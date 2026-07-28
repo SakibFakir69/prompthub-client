@@ -1,8 +1,10 @@
-import ResetPasswordComponent from '@/src/components/auth/reset-password'
+import { Suspense } from "react";
+import ResetPassword from "@/src/components/auth/reset-password";
 
-
-function page() {
-  return <ResetPasswordComponent/>
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPassword />
+    </Suspense>
+  );
 }
-
-export default page

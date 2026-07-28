@@ -104,7 +104,8 @@ export default function SettingScreen() {
   const handleLogout = () => {
     const confirmLogout = window.confirm('Log out\n\nAre you sure you want to log out?');
     if (confirmLogout) {
-      onLogout();
+      
+     
       console.log("handle logout clicked");
     }
   };
@@ -168,12 +169,12 @@ export default function SettingScreen() {
             height={100}
             width={100}
               src={user?.data.avatar || 'https://via.placeholder.com/150'}
-              alt={`${user?.name || 'User'}'s avatar`}
+              alt={`${user?.data.name || 'User'}'s avatar`}
               className="bg-gray-200 rounded-full w-14 h-14 object-cover"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-base font-bold text-gray-900 truncate">{user?.name}</p>
-              <p className="mt-0.5 text-sm text-gray-400 truncate">{user?.email}</p>
+              <p className="text-base font-bold text-gray-900 truncate">{user?.data.name}</p>
+              <p className="mt-0.5 text-sm text-gray-400 truncate">{user?.data.email}</p>
             </div>
             <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full flex-shrink-0">
               <ChevronRight size={16} className="text-gray-500" />
@@ -199,7 +200,7 @@ export default function SettingScreen() {
               
             />
             <Divider />
-            {!user?.isVerify && (
+            {!user?.data.isVerify && (
               <RowItem
                 icon={<BadgeCheck size={17} color="#534AB7" />}
                 iconBg="#EEEDFE"

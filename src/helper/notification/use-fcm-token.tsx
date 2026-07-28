@@ -29,10 +29,10 @@ export function useFcmToken(isAuthenticated: boolean) {
       console.log("Foreground message:", payload);
     });
 
-    return () => {
-      if (typeof unsubscribe === "function") {
-        unsubscribe();
-      }
-    };
+    // return () => {
+    //   if (typeof unsubscribe === "function") {
+    //     unsubscribe()?.();
+    //   }
+    // };
   }, [isAuthenticated, registerDeviceToken]);
 }

@@ -2,11 +2,16 @@ import { baseApi } from "../../baseApi";
 
 
 export interface User {
+   _id?: string
   id: string
   name: string
   email: string
   role: string
   createdAt: string
+  bio?:string
+  tags?:string[]
+  avatar?:string,
+  isVerify:boolean | string
 }
 
 
@@ -99,7 +104,7 @@ export const authApi = baseApi.injectEndpoints({
     // useResetCodeMutation,
     // useResendResetCodeMutation,
 
-    getMe: builder.query<User, void>({
+    getMe: builder.query<{ data: User }, void>({
       query: () => ({
         url: "/auth/me",
         method: "GET",

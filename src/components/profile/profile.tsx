@@ -20,7 +20,7 @@ import ProfileSkeleton from "./profile-skeleton";
 export default function ProfileComponent() {
   const [activeTab, setActiveTab] = useState<"my" | "saved">("my");
 
-  const { data: meData, isLoading: isMeLoading } = useGetMeQuery(null);
+  const { data: meData, isLoading: isMeLoading } = useGetMeQuery();
   const { data: allPromptsData, isLoading: isPromptsLoading } = useGetAllPromptsQuery();
   const { data: savedData, isLoading: isSavedLoading } = useGetSavedPromptsQuery();
 
@@ -60,7 +60,7 @@ console.log(savedPrompts , " data")
 
       <main className="max-w-2xl mx-auto px-4 py-6 flex flex-col gap-6">
         <section className="bg-white rounded-2xl p-6 border border-gray-100">
-          <ProfileHeader user={user} promptCount={myPrompts?.length} />
+          <ProfileHeader user={user} promptCount={myPrompts?.length ?? 0} />
         </section>
 
         <section className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -68,14 +68,14 @@ console.log(savedPrompts , " data")
             <ProfileTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              myCount={myPrompts?.length}
+              myCount={myPrompts?.length ?? 0}
               savedCount={savedPrompts.length}
             />
           </div>
 
           <div className="p-4">
             {activeTab === "my" ? (
-              <MyPrompt data={myPrompts} isLoading={isPromptsLoading} />
+              <MyPrompt data={myPrompts ?? []} isLoading={isPromptsLoading} />
             ) : (
               <SavedPromptList prompt={savedPrompts} isLoading={isSavedLoading} />
             )}

@@ -1,4 +1,5 @@
 import { baseApi } from "../../baseApi"
+import { User } from "../auth/auth.features"
 import { feedApi } from "../feed/feed.features" // adjust path to match your folder structure
 
 export interface Prompt {
@@ -10,17 +11,21 @@ export interface Prompt {
   image?: string
   imagePublicId?: string
   upVote: number
-  downVote: number
+  downVote: number,
+  category: string[],
+  
   userVote?: 'up' | 'down' | null
   createdAt: string
   updatedAt: string
-  visibility: boolean
+  visibility: boolean | string
+  createdBy?:User
 }
 
 export interface PromptResponse {
   success: boolean
   message: string
   data: Prompt
+  createdBy?:User
 }
 
 export interface PromptsResponse {
@@ -38,18 +43,21 @@ export interface VoteResponse {
 export interface CreatePromptPayload {
   title: string
   prompt: string
-  tags?: string[]
-  profile?: string
+  category: string   | string[]   
+  tags?: string[] 
+  visibility: string  | boolean
   image?: string
   imagePublicId?: string
+  profile?: string
 }
-
 export interface UpdatePromptPayload {
   id: string
   title?: string
   prompt?: string
   tags?: string[]
   profile?: string
+  url?:string,
+  visibility: string | boolean
 }
 
 export interface VotePayload {
@@ -58,6 +66,7 @@ export interface VotePayload {
 
 export interface SavePromptPayload {
   promptId: string
+  
 }
 
 // Mirrors the backend's toggle/switch/add state machine exactly,
@@ -112,7 +121,7 @@ export const promptApi = baseApi.injectEndpoints({
       },
     }),
 
-    uploadPromptImage: builder.mutation<{ image: string; imagePublicId: string }, FormData>({
+    uploadPromptImage: builder.mutation<{ image: string; imagePublicId: string ,url?:string,public_id:string }, FormData>({
       query: (data) => ({
         url: '/prompt/prompt-image',
         method: 'POST',

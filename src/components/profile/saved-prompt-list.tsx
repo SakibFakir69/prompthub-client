@@ -70,7 +70,7 @@ function SavedCard({ prompt }: { prompt: Prompt }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-1">
           <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-1">
-            {prompt?.promptId?.title || prompt?.title}
+            { prompt?.title}
           </p>
           <button
             onClick={handleRemove}
@@ -95,13 +95,13 @@ function SavedCard({ prompt }: { prompt: Prompt }) {
         </div>
 
         <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">
-          {prompt.promptId?.prompt || prompt.prompt}
+          { prompt.prompt}
         </p>
 
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1 text-xs text-gray-400">
             <ArrowBigUp size={13} className="text-indigo-400" />
-            {prompt.promptId?.upVote  || prompt?.upVote} upvotes
+            { prompt?.upVote} upvotes
           </span>
           <button
             onClick={handleCopy}

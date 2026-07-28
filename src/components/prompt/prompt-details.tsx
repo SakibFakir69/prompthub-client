@@ -87,14 +87,14 @@ function PromptDetails({ id }: { id: string }) {
   const handleSave = async () => {
     if (!prompt?._id || isSaved || isSaving) return
     try {
-      const res=await savePrompt({ prompt: prompt }).unwrap();
+      const res=await savePrompt({ promptId: prompt._id }).unwrap();
       console.log(res)
       toast.success(res?.message)
       
       // This prompt is already saved
       setIsSaved(true)
     } catch(err) {
-      toast.error(`${err?.data?.message || "Something went to wrong"}`)
+      toast.error(`${"Something went to wrong"}`)
       // no-op: leave isSaved false so the user can retry
     }
   }

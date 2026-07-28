@@ -10,7 +10,7 @@ import {
   useUploadPromptImageMutation,
 } from '@/src/store/features/prompt/prompt.features'
 import { toast } from 'react-toastify'
-import { MAX_CATEGORIES,MAX_IMAGE_MB,PRESET_CATEGORIES,MAX_TAGS } from '@/src/constants/create-prompt/constant.create-prompt'
+import { MAX_CATEGORIES, MAX_IMAGE_MB, PRESET_CATEGORIES, MAX_TAGS } from '@/src/constants/create-prompt/constant.create-prompt'
 
 
 
@@ -177,12 +177,15 @@ export default function CreatePromptBox() {
       let image = ''
       let imagePublicId = ''
 
+
       if (imageFile) {
         const form = new FormData()
         form.append('image', imageFile)
         const res = await uploadImage(form).unwrap()
-        image = res?.url;
-        imagePublicId = res?.public_id;
+
+        image = res?.image;
+        imagePublicId = res?.imagePublicId;
+
         console.log('UPLOAD RESPONSE:', res)
       }
 
@@ -348,10 +351,10 @@ export default function CreatePromptBox() {
                           type="button"
                           onClick={() => toggleCategory(cat, field.value, field.onChange)}
                           className={`text-xs px-3 py-1.5 rounded-full border transition-all ${field.value.includes(cat)
-                              ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
-                              : field.value.length >= MAX_CATEGORIES
-                                ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-white'
-                                : 'border-gray-200 text-gray-600 hover:border-[#FF6B35] hover:text-[#FF6B35] bg-white'
+                            ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
+                            : field.value.length >= MAX_CATEGORIES
+                              ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-white'
+                              : 'border-gray-200 text-gray-600 hover:border-[#FF6B35] hover:text-[#FF6B35] bg-white'
                             }`}
                         >
                           {cat}
@@ -363,8 +366,8 @@ export default function CreatePromptBox() {
                         <span
                           key={cat}
                           className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border transition-all ${field.value.includes(cat)
-                              ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
-                              : 'border-gray-200 text-gray-600 bg-white'
+                            ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
+                            : 'border-gray-200 text-gray-600 bg-white'
                             }`}
                         >
                           <button
@@ -544,8 +547,8 @@ export default function CreatePromptBox() {
                           type="button"
                           onClick={() => field.onChange(val)}
                           className={`flex-1 flex items-center justify-center gap-2 text-xs py-2.5 rounded-xl border transition-all ${field.value === val
-                              ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
-                              : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
+                            ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
+                            : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
                             }`}
                         >
                           <Icon className="w-3.5 h-3.5" /> {label}

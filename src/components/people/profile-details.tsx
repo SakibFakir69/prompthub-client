@@ -2,7 +2,9 @@
 
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Search, X, ChevronDown, Users, FileText, Calendar, ArrowLeft, SlidersHorizontal, Check, Loader2 } from "lucide-react";
+import { Search, X, ChevronDown, Users, FileText, Calendar, ArrowLeft, SlidersHorizontal, Check, Loader } from "lucide-react";
+import { Avatar } from "./people-avatar";
+import { FollowButton } from "./follow-button";
 
 // ---------- Types (mirror the backend contract) ----------
 
@@ -52,19 +54,6 @@ export function ProfileDetail({
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    mockGetProfile(userId).then((p) => {
-      if (active) {
-        setProfile(p);
-        setLoading(false);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [userId]);
 
   const handleToggle = async () => {
     await onToggleFollow(userId);
@@ -96,15 +85,17 @@ export function ProfileDetail({
         <div className="space-y-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4">
-              <Avatar name={profile.name} size={64} />
+              <Avatar name={profile.name} size={'md'} />
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-medium text-gray-900">{profile.name}</h2>
                 <p className="truncate text-[13px] text-gray-500">{profile.email}</p>
                 <span className="mt-1 inline-block rounded-full bg-gray-50 px-2 py-0.5 text-[11px] text-gray-500">
-                  {genderLabel(profile.gender)} · {profile.age} years
+                 {profile.age} years
+                  
                 </span>
               </div>
             </div>
+            
             <FollowButton isFollowing={profile.isFollowing} onToggle={handleToggle} size="md" />
           </div>
 
@@ -115,13 +106,15 @@ export function ProfileDetail({
               <p className="flex items-center gap-1.5 text-[12px] text-gray-500">
                 <Users size={13} /> Followers
               </p>
-              <p className="mt-1 text-xl font-medium text-gray-900">{formatCount(profile.followers)}</p>
+              <p className="mt-1 text-xl font-medium text-gray-900">
+                {profile.followers}</p>
+              
             </div>
             <div className="rounded-lg bg-gray-50 p-3">
               <p className="flex items-center gap-1.5 text-[12px] text-gray-500">
                 <FileText size={13} /> Posts
               </p>
-              <p className="mt-1 text-xl font-medium text-gray-900">{formatCount(profile.totalPosts)}</p>
+              <p className="mt-1 text-xl font-medium text-gray-900">{profile.totalPosts}</p>
             </div>
             <div className="rounded-lg bg-gray-50 p-3">
               <p className="flex items-center gap-1.5 text-[12px] text-gray-500">

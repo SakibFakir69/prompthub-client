@@ -1,4 +1,5 @@
 'use client'
+import { SearchUser, SearchUsersResponse } from '@/src/store/features/people/people.features'
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import {
@@ -12,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import type { SearchUser, SearchUsersResponse } from '@/src/features/people/peopleApi'
+
 import { SkeletonCard } from './people-skeleton'
 import { useLazySearchUsersQuery, useFollowUserMutation } from '@/src/store/features/people/people.features'
 import { GENDER_OPTIONS, PAGE_SIZE, SORT_OPTIONS } from '@/src/constants/people'

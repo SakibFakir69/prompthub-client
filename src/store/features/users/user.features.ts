@@ -5,6 +5,8 @@ export interface User {
   name?: string
   email?: string
   status:string
+  bio?:string
+  isVerify:boolean
   // add more fields as needed
 }
 
@@ -19,6 +21,7 @@ export interface UpdateUserPayload {
   name?: string
   email?: string
   password?: string
+  bio?:string
 }
 
 

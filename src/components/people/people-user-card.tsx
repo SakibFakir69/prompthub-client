@@ -4,7 +4,8 @@ import { UserPlus, UserCheck, UserMinus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import type { SearchUser } from '@/src/features/people/peopleApi'
+import { SearchUser, SearchUsersResponse } from '@/src/store/features/people/people.features'
+
 import { Avatar } from './people-avatar'
 
 function fmtNum(n: number | null | undefined): string {

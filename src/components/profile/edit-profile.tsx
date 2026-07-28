@@ -353,7 +353,7 @@ export default function EditProfilePage() {
     defaultValues: { name: "", email: "", bio: "", tags: [] ,avatar:"" },
   });
  
-  const {name,email,bio,tags,avatar} = user?.data|| {};
+  const {name,email,bio,tags,avatar,createdAt} = user?.data|| {};
 
   console.log(name,email,user?.data,avatar)
 
@@ -484,7 +484,7 @@ export default function EditProfilePage() {
           <div className="px-6 py-5 border-b border-gray-100">
             <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-4">Identity</p>
             <AvatarSection
-              name={user.name}
+              name={name}
               avatar={avatar ?? undefined}
               onUpload={onAvatarUpload}
               isUploading={isAvatarUploading}
@@ -527,10 +527,10 @@ export default function EditProfilePage() {
               <button
                 type="button"
                 onClick={() => reset({
-                  name:  user.name  ?? "",
-                  email: user.email ?? "",
-                  bio:   user.bio   ?? "",
-                  tags:  user.tags  ?? [],
+                  name:  name  ?? "",
+                  email: email ?? "",
+                  bio:   bio   ?? "",
+                  tags:  tags  ?? [],
                 })}
                 disabled={!isProfileDirty}
                 className="px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-40 transition-colors"
@@ -552,7 +552,7 @@ export default function EditProfilePage() {
             <Field label="Member since">
               <div className="px-3 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm text-gray-500">
                 {/* FIX: safe date formatting — no crash on undefined/null/invalid */}
-                {formatMemberSince(user.createdAt ?? user.created_at)}
+                {formatMemberSince(createdAt)}
               </div>
             </Field>
           </div>

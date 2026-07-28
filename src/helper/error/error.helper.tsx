@@ -7,7 +7,7 @@
 import { IError } from '@/src/interfaces/error/error.interface'
 import { toast } from 'react-toastify';
 
-function CatchErrorHandel({ error }: IError) {
+function CatchErrorHandel({ error }: IError | any) {
 
     const { message } = error?.data || {};
 

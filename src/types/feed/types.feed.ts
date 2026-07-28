@@ -9,6 +9,7 @@ export interface FeedItem {
   createdBy: { userId: string; name: string; avatar: string }
   upVote: number
   downVote: number
+  userVote?: "up" | "down" | null;
   upVotedBy: string[]
   createdAt: string
 }
@@ -30,4 +31,5 @@ export interface Prompt {
   downVote: number
   upVotedBy: string[]
   createdAt: string
+    userVote?: "up" | "down" | null;
 }
