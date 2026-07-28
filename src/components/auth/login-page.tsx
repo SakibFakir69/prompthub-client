@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useLoginUserMutation } from "@/src/store/features/auth/auth.features";
 import CatchErrorHandel from "@/src/helper/error/error.helper";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 
 
@@ -75,11 +76,11 @@ function LoginComponent() {
       <div className="max-w-md w-full space-y-8 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-gray-200/60 relative z-10">
         {/* Brand / Logo area */}
         <div className="text-center">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#ff9a76] flex items-center justify-center mb-4 shadow-md">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+
+          <div className="flex justify-center">
+            <Image src={'/ph-logo-2-bg.png'} alt={'PromptHub'} height={200} width={200}/>
           </div>
+         
           <h2 className="text-3xl font-extrabold text-gray-900">
             Welcome back
           </h2>

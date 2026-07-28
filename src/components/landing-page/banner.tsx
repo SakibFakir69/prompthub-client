@@ -38,10 +38,10 @@ function Banner() {
 
           {/* Call to Actions */}
           <div className="reveal" style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="#" className="btn-primary btn-accent" style={{ fontSize: 16, padding: "16px 34px" }}>
+            <a href="/login" className="btn-primary btn-accent" style={{ fontSize: 16, padding: "16px 34px" }}>
               Explore Community Prompts →
             </a>
-            <a href="#" className="btn-ghost" style={{ color: "#fff", borderColor: "rgba(255,255,255,0.25)", fontSize: 16, padding: "16px 34px" }}>
+            <a href="/login" className="btn-ghost" style={{ color: "#fff", borderColor: "rgba(255,255,255,0.25)", fontSize: 16, padding: "16px 34px" }}>
               Share Your First Prompt
             </a>
           </div>

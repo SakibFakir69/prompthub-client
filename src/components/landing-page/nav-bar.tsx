@@ -2,6 +2,7 @@
 
 
 import { useScrollReveal } from '@/src/hooks/landing-page/page';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react'
 
@@ -295,10 +296,13 @@ function Navbar() {
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
           {/* Logo */}
-          <a href="#" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #FF6B35, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⚡</div>
-            <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 20, color: "#0a0a0f", letterSpacing: "-0.03em" }}>PromptHub</span>
-          </a>
+          
+            
+            <Link href={'/'} className='cursor-pointer'>
+            <Image alt='prompt hub' src={'/ph-logo-2-bg.png'} height={200} width={200}/>
+            </Link>
+
+
 
           {/* Nav Links */}
           <div className="nav-links" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>

@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import { registerUserSchemaValidation } from "@/src/validations/auth";
 import Link from "next/link";
 import AuthBackground from "./auth-background";
-import { ToastContainer, toast } from 'react-toastify';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from 'zod'
 import { useRouter } from "next/navigation";
 import { useGoogleLoginMutation } from "@/src/store/features/auth/auth.features";
 import { useRegisterUserMutation } from "@/src/store/features/users/user.features";
 import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
+import Image from "next/image";
 type registerType = z.infer<typeof registerUserSchemaValidation>
 
 
@@ -43,7 +43,7 @@ function RegisterComponent() {
       const res = await registerUser(registrationData).unwrap();
       console.log(res, 'rse')
 
-      if (res?.status===true) {
+      if (res?.status === true) {
 
         console.log("sending.....")
 
@@ -92,7 +92,7 @@ function RegisterComponent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
-    
+
 
       <AuthBackground />
 
@@ -101,11 +101,12 @@ function RegisterComponent() {
 
         {/* Brand / Logo area */}
         <div className="text-center">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#ff9a76] flex items-center justify-center mb-4 shadow-md">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+
+          <div className="flex justify-center">
+            <Image src={'/ph-logo-2-bg.png'} alt={'PromptHub'} height={200} width={200} />
           </div>
+
+
           <h2 className="text-3xl font-extrabold text-gray-900">Create your account</h2>
           <p className="mt-2 text-sm text-gray-500">Sign up to discover & share the best AI prompts</p>
         </div>
