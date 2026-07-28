@@ -4,7 +4,7 @@ import { DemoPrompt } from "@/src/interfaces/auth";
 
 
 export function PromptCardLogin({ prompt, className }: { prompt: DemoPrompt; className?: string }) {
-  const initials = prompt?.creatededBy?.name
+  const initials =  prompt?.createdBy?.name
     .split(" ")
     .map((n) => n[0])
     .join("")
