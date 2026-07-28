@@ -57,7 +57,7 @@ interface PrivacyState {
 }
 
 
-export default function SettingScreen({  onLogout }: SettingScreenProps) {
+export default function SettingScreen() {
 
  
   const router = useRouter();

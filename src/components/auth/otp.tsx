@@ -165,6 +165,10 @@ function OtpComponent({
     inputRefs.current[0]?.focus();
     startTimer();
     try {
+      if (!email || !name) {
+  toast.error("Missing email or name");
+  return;
+}
 
       await sendOtp({ email: email, name: name }).unwrap();
       toast.success("OTP Send Successfully")

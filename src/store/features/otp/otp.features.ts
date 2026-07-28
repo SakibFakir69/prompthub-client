@@ -15,9 +15,10 @@ export interface SendOtpResponse {
   status:boolean,
 }
 
-export interface VerifyOtpPayload  extends SendOtpPayload{
-  email: string
-  otp: string,
+interface VerifyOtpPayload {
+  otp: string;
+  email: string;
+  name?: string;
 }
 
 export interface VerifyOtpResponse {

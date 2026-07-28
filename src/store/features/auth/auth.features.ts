@@ -9,11 +9,17 @@ export interface User {
   createdAt: string
 }
 
-export interface AuthResponse {
-  message: string
+
+interface AuthResponse {
+  data: {
+    isOtpVerify: boolean;
+    email: string;
+  };
+  message?: string;
+  success?: boolean;
   accessToken?: string
   user?: User
-  status:boolean
+  status: boolean
 }
 
 export interface LoginPayload {
@@ -44,7 +50,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: "/auth/login",
         method: "POST",
-        data,                       
+        data,
       }),
       invalidatesTags: ["Auth"],
     }),
@@ -53,7 +59,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: "/auth/change-password",
         method: "POST",
-        data,                     
+        data,
       }),
       invalidatesTags: ["Auth"],
     }),
@@ -62,14 +68,14 @@ export const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: "/auth/reset-password",
         method: "POST",
-        data,                        
+        data,
       }),
     }),
 
     refreshToken: builder.mutation<AuthResponse, void>({
       query: () => ({
         url: "/auth/refresh",
-        method: "POST",             
+        method: "POST",
       }),
       invalidatesTags: ["Auth"],
     }),
@@ -86,7 +92,7 @@ export const authApi = baseApi.injectEndpoints({
       query: (data) => ({
         url: "/auth/reset-email",
         method: "POST",
-        data,                       
+        data,
       }),
     }),
 
@@ -104,7 +110,7 @@ export const authApi = baseApi.injectEndpoints({
     googleLogin: builder.mutation<AuthResponse, void>({
       query: () => ({
         url: "/auth/google",
-        method: "GET",               
+        method: "GET",
       }),
     }),
 
