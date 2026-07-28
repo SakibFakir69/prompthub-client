@@ -39,7 +39,7 @@ export default async function LeftSidebar() {
   return (
     <div className="flex flex-col h-full p-4 border-r border-gray-100">
     
-    
+  
       <div className="px-3 py-2 mb-5">
         <Link prefetch={true} href={'/home'}>
         <Image src={'/ph-logo-2-bg.png'} alt={'PromptHub'} height={180} width={150}/>
