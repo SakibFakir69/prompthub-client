@@ -1,3 +1,4 @@
+'use client'
 import { useEffect } from "react";
 import {
   requestNotificationPermission,
@@ -16,7 +17,7 @@ export function useFcmToken(isAuthenticated: boolean) {
       const token = await requestNotificationPermission();
 
       if (!token) return;
-      
+
       localStorage.setItem("fcmToken", token);
 
       await registerDeviceToken({
