@@ -37,7 +37,6 @@ axiosInstance.interceptors.response.use(
 
       try {
         await axiosInstance.post("/auth/refresh");
-
         // IMPORTANT: retry after refresh
         return axiosInstance(originalRequest);
       } catch (err) {
