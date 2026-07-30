@@ -15,7 +15,7 @@ export function MiniProfile({ profileData }: { profileData: any }) {
   const { data: getMeData, isLoading } = useGetMeQuery();
   const [logoutUser] = useLogoutUserMutation();
   const [unregisterDeviceToken] = useUnregisterDeviceTokenMutation();
-  const token = localStorage.getItem("fcmToken");
+
   const dispatch = useDispatch();
 
   const activeUser = getMeData?.data || profileData?.data || profileData || {}
@@ -29,34 +29,28 @@ export function MiniProfile({ profileData }: { profileData: any }) {
     .toUpperCase()
 
   const handleLogout = async () => {
-    
-    try {
-      const res = await logoutUser().unwrap();
-      setIsClicked(false);
-      
+  try {
+    const token = localStorage.getItem("fcmToken");
 
-      if(token) {
-        try {
-          await unregisterDeviceToken({ token:token }).unwrap();
-          localStorage.removeItem("fcmToken");
-        } catch (err) {
-          console.error(err);
-        }
+    const res = await logoutUser().unwrap();
+    setIsClicked(false);
+
+    if (token) {
+      try {
+        await unregisterDeviceToken({ token }).unwrap();
+        localStorage.removeItem("fcmToken");
+      } catch (err) {
+        console.error(err);
       }
-
-      // Clear RTK Query cache
-      dispatch(baseApi.util.resetApiState());
-      // unregister token
-
-
-
-      toast.success("User logged out successfully");
-
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to log out. Please try again.");
     }
+
+    dispatch(baseApi.util.resetApiState());
+    toast.success("User logged out successfully");
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to log out. Please try again.");
   }
+};
 
   if (isLoading) {
     return <MiniProfileSkeleton />

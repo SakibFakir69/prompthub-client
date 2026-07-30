@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { cookies } from "next/headers";
 import { jwtDecode } from "jwt-decode";
 import PeopleSearch from "@/src/components/people/people-main";

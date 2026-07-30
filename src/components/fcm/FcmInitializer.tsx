@@ -6,6 +6,8 @@ import { useUser } from "@/src/hooks/me/user-data";
 export default function FcmInitializer() {
   const { user, isLoading } = useUser();
 
+
+
   useFcmToken(!!user);
 
   if (isLoading) return null;
