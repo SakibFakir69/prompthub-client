@@ -43,7 +43,7 @@ export default async function LeftSidebar() {
   
       <div className="px-3 py-2 mb-5">
         <Link prefetch={true} href={'/home'}>
-        <Image src={'/ph-logo-2-bg.png'} alt={'PromptHub'} height={180} width={150}/>
+        <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} alt={'PromptHub'} height={180} width={150}/>
         </Link>
 
       </div>

@@ -105,7 +105,7 @@ function RegisterComponent() {
         <div className="text-center">
 
           <div className="flex justify-center">
-            <Image src={'/ph-logo-2-bg.png'} alt={'PromptHub'} height={200} width={200} />
+            <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} alt={'PromptHub'} height={200} width={200} />
           </div>
 
 
