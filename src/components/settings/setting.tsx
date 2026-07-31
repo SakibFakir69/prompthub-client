@@ -32,6 +32,14 @@ import { Divider } from './setting-divider';
 import { SectionLabel } from './setting-section-label';
 
 
+import { toast } from "react-toastify"
+
+import { baseApi } from "@/src/store/baseApi"
+import { useDispatch } from 'react-redux';
+import { useLogoutUserMutation } from '@/src/store/features/auth/auth.features';
+import { useUnregisterDeviceTokenMutation } from '@/src/store/features/notification/notification.features';
+
+
 interface IUser {
   name: string;
   email: string;
@@ -59,10 +67,14 @@ interface PrivacyState {
 
 export default function SettingScreen() {
 
- 
+
   const router = useRouter();
-  
-  const {user} = useUser();
+
+  const { user } = useUser();
+  const [logoutUser] = useLogoutUserMutation();
+  const [unregisterDeviceToken] = useUnregisterDeviceTokenMutation();
+
+  const dispatch = useDispatch();
 
   const [notifications, setNotifications] = useState<NotificationState>({
     push: true,
@@ -75,6 +87,31 @@ export default function SettingScreen() {
     privateAccount: false,
     activityStatus: true,
   });
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("fcmToken");
+
+      const res = await logoutUser().unwrap();
+
+
+      if (token) {
+        try {
+          await unregisterDeviceToken({ token }).unwrap();
+          localStorage.removeItem("fcmToken");
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      dispatch(baseApi.util.resetApiState());
+      toast.success("User logged out successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to log out. Please try again.");
+    }
+  };
+
 
 
 
@@ -101,14 +138,7 @@ export default function SettingScreen() {
     }
   };
 
-  const handleLogout = () => {
-    const confirmLogout = window.confirm('Log out\n\nAre you sure you want to log out?');
-    if (confirmLogout) {
-      
-     
-      console.log("handle logout clicked");
-    }
-  };
+  
 
   const ToggleSwitch = ({
     value,
@@ -126,14 +156,12 @@ export default function SettingScreen() {
         e.stopPropagation(); // Prevents row item triggers
         onToggle();
       }}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none duration-200 ${
-        disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
-      } ${value ? 'bg-gray-900' : 'bg-gray-200'}`}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none duration-200 ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+        } ${value ? 'bg-gray-900' : 'bg-gray-200'}`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-          value ? 'translate-x-6' : 'translate-x-1'
-        }`}
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${value ? 'translate-x-6' : 'translate-x-1'
+          }`}
       />
     </button>
   );
@@ -142,7 +170,7 @@ export default function SettingScreen() {
     <div className="min-h-screen flex justify-center">
       {/* Container to restrict max width on desktop view (retains mobile app layout style) */}
       <div className="w-full  bg-gray-50 flex flex-col min-h-screen border-x border-gray-100 ">
-        
+
         {/* Header */}
         <header className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100 sticky top-0 z-10">
           <button
@@ -166,8 +194,8 @@ export default function SettingScreen() {
             className="flex w-[calc(100%-2rem)] text-left items-center gap-4 p-4 mx-4 mt-6 bg-white border border-gray-100 rounded-2xl shadow-sm transition-all hover:border-gray-200 active:bg-gray-50"
           >
             <Image
-            height={100}
-            width={100}
+              height={100}
+              width={100}
               src={user?.data.avatar || 'https://via.placeholder.com/150'}
               alt={`${user?.data.name || 'User'}'s avatar`}
               className="bg-gray-200 rounded-full w-14 h-14 object-cover"
@@ -196,8 +224,8 @@ export default function SettingScreen() {
               iconBg="#EAF3DE"
               label="Change password"
               onPress={() => router.push('/profile/edit')}
-            
-              
+
+
             />
             <Divider />
             {!user?.data.isVerify && (
@@ -302,7 +330,7 @@ export default function SettingScreen() {
               label="Blocked users"
             />
           </SettingGroup>
-          
+
 
           {/* ── Appearance ── */}
           <SectionLabel label="Appearance" />
