@@ -1,74 +1,49 @@
 "use client"
-import { CATEGORIES, PROMPTS } from '@/src/constants/landing-page'
-import { useScrollReveal } from '@/src/hooks/landing-page/page';
-import React, { useEffect, useRef, useState } from 'react'
-import { PromptCard } from './components/prompt-card';
 
+import { Star } from "lucide-react"
+import type { Prompt } from "@/src/constants/landing-page"
 
-function MarketPlace() {
+interface PromptCardProps {
+  prompt: Prompt
+  delay?: number
+}
 
-  useScrollReveal();
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [scrolled, setScrolled] = useState(false);
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const normalize = (s: string) => s.trim().toLowerCase();
-
-  const filteredPrompts = PROMPTS.filter(
-    (p) =>
-      activeCategory === "All" ||
-      normalize(p.category) === normalize(activeCategory)
-  );
-
-  // Safety net: force-reveal cards whenever the filtered list changes.
-  // Fixes cards staying invisible after switching categories, since
-  // useScrollReveal's IntersectionObserver only scans elements present
-  // on initial mount and won't pick up newly rendered cards.
-  useEffect(() => {
-    if (!gridRef.current) return;
-    const cards = gridRef.current.querySelectorAll(".reveal");
-    cards.forEach((el) => el.classList.add("revealed"));
-  }, [activeCategory, filteredPrompts.length]);
-
+export function PromptCard({ prompt: p, delay = 0 }: PromptCardProps) {
   return (
-    <div>
-        <section id="marketplace" style={{ padding: "7rem 5vw", background: "#f8f7f4" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1.5rem", marginBottom: "2.5rem" }}>
-            <div>
-              <div className="reveal section-label">Marketplace</div>
-              <h2 className="reveal section-heading">Top prompts<br />this week</h2>
-            </div>
-            <div className="reveal" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {CATEGORIES.map((cat) => (
-                <button key={cat} className={`tab-btn ${activeCategory === cat ? "active" : ""}`} onClick={() => setActiveCategory(cat)}>{cat}</button>
-              ))}
-            </div>
-          </div>
-
-          {filteredPrompts.length > 0 ? (
-            <div ref={gridRef} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.25rem" }}>
-              {filteredPrompts.map((p, i) => <PromptCard key={p.id} prompt={p} delay={i * 0.08} />)}
-            </div>
-          ) : (
-            <div style={{ textAlign: "center", padding: "3rem 0", color: "#9ca3af", fontSize: 14 }}>
-              No prompts in this category yet.
-            </div>
-          )}
-
-          <div style={{ textAlign: "center", marginTop: "3rem" }}>
-            <a href="/login" className="btn-ghost">View all 50,000+ prompts →</a>
-          </div>
+    <div
+      className="reveal bg-white border border-gray-100 rounded-xl p-4 hover:border-gray-200 transition-colors"
+      style={{ transitionDelay: `${delay}s` }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-[17px]"
+          style={{ background: `${p.color}1A` }}
+        >
+          {p.emoji}
         </div>
-      </section>
+        <div className="min-w-0">
+          <p className="text-[13px] font-medium text-gray-900 truncate">{p.author}</p>
+          <p className="text-[11px] text-gray-400">{p.category}</p>
+        </div>
+      </div>
+
+      <h3 className="text-[15px] font-medium text-gray-900 mb-3 leading-snug">
+        {p.title}
+      </h3>
+
+      <div className="flex items-center justify-between pt-2.5 border-t border-gray-100">
+        <div className="flex items-center gap-1">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star
+              key={i}
+              size={12}
+              strokeWidth={0}
+              fill={i < p.rating ? "#F59E0B" : "#e5e7eb"}
+            />
+          ))}
+        </div>
+        <span className="text-[12px] text-gray-400">{p.uses} uses</span>
+      </div>
     </div>
   )
 }
-
-export default MarketPlace
