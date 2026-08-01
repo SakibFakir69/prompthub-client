@@ -9,22 +9,22 @@ function Hero() {
         {/* Floating Cards — Left */}
         <div className="floating-card" style={{ left: "2%", top: "25%", "--rot": "-4deg" } as React.CSSProperties & { "--rot": string }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 20 }}>📸</span>
+            <span style={{ fontSize: 20 }}>✍️</span>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#0a0a0f" }}>Product Photography</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#0a0a0f" }}>Viral Hook Generator</div>
               <div style={{ fontSize: 11, color: "#9ca3af" }}>by Mira Chen</div>
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", gap: 2 }}>{[1,2,3,4,5].map(i => <span key={i} style={{ color: "#F59E0B", fontSize: 11 }}>★</span>)}</div>
-            <span style={{ fontWeight: 800, fontSize: 13, color: "#0a0a0f", fontFamily: "'Syne', sans-serif" }}>$4.99</span>
+            <span style={{ fontWeight: 700, fontSize: 12, color: "#6b7280" }}>3.2k uses</span>
           </div>
         </div>
 
         <div className="floating-card" style={{ left: "1%", top: "58%", "--rot": "3deg", animationDelay: "1.2s" } as React.CSSProperties & { "--rot": string }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: "#10B981", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>💸 New Sale</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#0a0a0f" }}>@jake_wolfe earned</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#0a0a0f", fontFamily: "'Syne', sans-serif" }}>$847 today</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#10B981", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em" }}>🔁 Total prompt uses</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#0a0a0f" }}>Across the marketplace</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#0a0a0f", fontFamily: "'Syne', sans-serif" }}>1,204,382</div>
         </div>
 
         {/* Floating Cards — Right */}
@@ -71,12 +71,12 @@ function Hero() {
           {/* CTAs */}
           <div className="hero-ctas" style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", marginBottom: "3.5rem", animation: "fadeUp 0.6s 0.3s ease both" }}>
             <a href="#marketplace" className="btn-primary btn-accent" style={{ fontSize: 16, padding: "16px 34px" }}>Browse Prompts →</a>
-            <a href="#" className="btn-ghost" style={{ fontSize: 16, padding: "16px 34px" }}>Start Selling Free</a>
+            
           </div>
 
           {/* Stats */}
           <div className="hero-stats" style={{ display: "flex", gap: "3rem", justifyContent: "center", animation: "fadeUp 0.6s 0.4s ease both" }}>
-            {[["50K+", "Prompts Available"], ["$2.4M", "Paid to Creators"], ["1M+", "Downloads"], ["4.9★", "Avg Rating"]].map(([num, label]) => (
+            {[["50K+", "Prompts Available"], ["$2.4M", "Paid to Creators"], ["1M+", "Prompt Uses"], ["120K+", "Shares"]].map(([num, label]) => (
               <div key={label} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(1.8rem, 4vw, 2.4rem)", fontWeight: 800, color: "#0a0a0f", letterSpacing: "-0.03em" }}>{num}</div>
                 <div style={{ fontSize: 13, color: "#9ca3af", fontWeight: 500 }}>{label}</div>
