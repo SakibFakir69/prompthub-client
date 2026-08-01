@@ -26,7 +26,7 @@ export default function LandingPage() {
 
       <Features />
 
-      <Pricing />
+      {/* <Pricing /> */}
 
       <Testionails/>
 

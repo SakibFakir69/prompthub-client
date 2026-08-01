@@ -1,6 +1,8 @@
 
 "use client"
 
+import Image from "next/image";
+
 function Footer() {
   return (
     <div>
@@ -9,8 +11,8 @@ function Footer() {
           <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: "3rem", marginBottom: "4rem" }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1rem" }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #FF6B35, #7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⚡</div>
-                <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 20, color: "#fff" }}>PromptHub</span>
+                
+                 <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} alt={'PromptHub'} height={200} width={200}/>
               </div>
               <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 14, lineHeight: 1.7, maxWidth: 260, fontWeight: 300 }}>The world's leading marketplace for AI prompts. Buy, sell, and discover prompts that actually work.</p>
               <div style={{ display: "flex", gap: 10, marginTop: "1.5rem" }}>
@@ -45,7 +47,7 @@ function Footer() {
 
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>© 2025 PromptHub, Inc. All rights reserved.</span>
-            <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 13 }}>Built for the AI generation ⚡</span>
+            
           </div>
         </div>
       </footer>

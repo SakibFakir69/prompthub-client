@@ -1,7 +1,7 @@
 "use client"
 import { CATEGORIES, PROMPTS } from '@/src/constants/landing-page'
 import { useScrollReveal } from '@/src/hooks/landing-page/page';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { PromptCard } from './components/prompt-card';
 
 
@@ -10,7 +10,7 @@ function MarketPlace() {
   useScrollReveal();
   const [activeCategory, setActiveCategory] = useState("All");
   const [scrolled, setScrolled] = useState(false);
- 
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -18,10 +18,23 @@ function MarketPlace() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const normalize = (s: string) => s.trim().toLowerCase();
+
   const filteredPrompts = PROMPTS.filter(
-    (p) => activeCategory === "All" || p.category === activeCategory
+    (p) =>
+      activeCategory === "All" ||
+      normalize(p.category) === normalize(activeCategory)
   );
 
+  // Safety net: force-reveal cards whenever the filtered list changes.
+  // Fixes cards staying invisible after switching categories, since
+  // useScrollReveal's IntersectionObserver only scans elements present
+  // on initial mount and won't pick up newly rendered cards.
+  useEffect(() => {
+    if (!gridRef.current) return;
+    const cards = gridRef.current.querySelectorAll(".reveal");
+    cards.forEach((el) => el.classList.add("revealed"));
+  }, [activeCategory, filteredPrompts.length]);
 
   return (
     <div>
@@ -39,12 +52,18 @@ function MarketPlace() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.25rem" }}>
-            {filteredPrompts.map((p, i) => <PromptCard key={p.id} prompt={p} delay={i * 0.08} />)}
-          </div>
+          {filteredPrompts.length > 0 ? (
+            <div ref={gridRef} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.25rem" }}>
+              {filteredPrompts.map((p, i) => <PromptCard key={p.id} prompt={p} delay={i * 0.08} />)}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "3rem 0", color: "#9ca3af", fontSize: 14 }}>
+              No prompts in this category yet.
+            </div>
+          )}
 
           <div style={{ textAlign: "center", marginTop: "3rem" }}>
-            <a href="#" className="btn-ghost">View all 50,000+ prompts →</a>
+            <a href="/login" className="btn-ghost">View all 50,000+ prompts →</a>
           </div>
         </div>
       </section>

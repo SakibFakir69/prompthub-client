@@ -1,16 +1,13 @@
-
-
 export interface Prompt {
   id: number;
   title: string;
   category: string;
   author: string;
   authorInitials: string;
-  price: string;
   rating: number;
   uses: string;
   tag: string;
-  emoji: string;
+  icon: string; // lucide-react icon name, e.g. "Camera", "Mail"
   color: string;
 }
 
@@ -37,10 +34,14 @@ export const PRICING = [
 export const CATEGORIES = ["All", "Design", "Marketing", "Copywriting", "Dev", "Productivity"];
 
 export const PROMPTS: Prompt[] = [
-  { id: 1, title: "Ultra-Realistic Product Photography", category: "Design", author: "Mira Chen", authorInitials: "MC", price: "$4.99", rating: 5, uses: "12.4k", tag: "Trending", emoji: "📸", color: "#FF6B35" },
-  { id: 2, title: "Cold Email That Books Meetings", category: "Marketing", author: "Jake Wolfe", authorInitials: "JW", price: "$3.49", rating: 5, uses: "9.1k", tag: "Best Seller", emoji: "📧", color: "#7C3AED" },
-  { id: 3, title: "SaaS Landing Page Copywriter", category: "Copywriting", author: "Priya S.", authorInitials: "PS", price: "$6.99", rating: 5, uses: "7.8k", tag: "Hot", emoji: "✍️", color: "#0EA5E9" },
-  { id: 4, title: "Full-Stack Code Reviewer", category: "Dev", author: "Tom Nakamura", authorInitials: "TN", price: "Free", rating: 4, uses: "22.3k", tag: "Free", emoji: "🛠️", color: "#10B981" },
-  { id: 5, title: "Viral Thread Generator (X/Twitter)", category: "Marketing", author: "Lena Brooks", authorInitials: "LB", price: "$2.99", rating: 5, uses: "18.6k", tag: "Viral", emoji: "🧵", color: "#F59E0B" },
-  { id: 6, title: "Business Analyst Report Writer", category: "Productivity", author: "Arjun Mehta", authorInitials: "AM", price: "$5.49", rating: 4, uses: "5.2k", tag: "New", emoji: "📊", color: "#EC4899" },
+  { id: 1, title: "Ultra-Realistic Product Photography", category: "Design", author: "Mira Chen", authorInitials: "MC", rating: 5, uses: "12.4k", tag: "Trending", icon: "Camera", color: "#FF6B35" },
+  { id: 2, title: "Brand Style Guide Generator", category: "Design", author: "Noah Park", authorInitials: "NP", rating: 4, uses: "6.7k", tag: "New", icon: "Palette", color: "#F59E0B" },
+  { id: 3, title: "Cold Email That Books Meetings", category: "Marketing", author: "Jake Wolfe", authorInitials: "JW", rating: 5, uses: "9.1k", tag: "Best Seller", icon: "Mail", color: "#7C3AED" },
+  { id: 4, title: "Viral Thread Generator (X/Twitter)", category: "Marketing", author: "Lena Brooks", authorInitials: "LB", rating: 5, uses: "18.6k", tag: "Viral", icon: "TrendingUp", color: "#F59E0B" },
+  { id: 5, title: "SaaS Landing Page Copywriter", category: "Copywriting", author: "Priya S.", authorInitials: "PS", rating: 5, uses: "7.8k", tag: "Hot", icon: "PenLine", color: "#0EA5E9" },
+  { id: 6, title: "Product Description Writer (E-commerce)", category: "Copywriting", author: "Ellie Ross", authorInitials: "ER", rating: 4, uses: "5.9k", tag: "Popular", icon: "ShoppingBag", color: "#EC4899" },
+  { id: 7, title: "Full-Stack Code Reviewer", category: "Dev", author: "Tom Nakamura", authorInitials: "TN", rating: 4, uses: "22.3k", tag: "Free", icon: "Code2", color: "#10B981" },
+  { id: 8, title: "REST API Documentation Generator", category: "Dev", author: "Sam Osei", authorInitials: "SO", rating: 5, uses: "8.3k", tag: "Trending", icon: "FileCode", color: "#0EA5E9" },
+  { id: 9, title: "Business Analyst Report Writer", category: "Productivity", author: "Arjun Mehta", authorInitials: "AM", rating: 4, uses: "5.2k", tag: "New", icon: "BarChart3", color: "#EC4899" },
+  { id: 10, title: "Meeting Notes to Action Items", category: "Productivity", author: "Zara Ahmed", authorInitials: "ZA", rating: 5, uses: "11.0k", tag: "Popular", icon: "ListChecks", color: "#10B981" },
 ];
