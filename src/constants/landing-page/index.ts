@@ -9,6 +9,7 @@ export interface Prompt {
   tag: string;
   icon: string; // lucide-react icon name, e.g. "Camera", "Mail"
   color: string;
+  emoji:string
 }
 
 
