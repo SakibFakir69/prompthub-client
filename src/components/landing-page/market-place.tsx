@@ -8,7 +8,7 @@ interface PromptCardProps {
   delay?: number
 }
 
-export function PromptCard({ prompt: p, delay = 0 }: PromptCardProps) {
+export function MarketPlace({ prompt: p, delay = 0 }: PromptCardProps) {
   return (
     <div
       className="reveal bg-white border border-gray-100 rounded-xl p-4 hover:border-gray-200 transition-colors"
