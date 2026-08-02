@@ -76,7 +76,7 @@ function Hero() {
 
           {/* Stats */}
           <div className="hero-stats" style={{ display: "flex", gap: "3rem", justifyContent: "center", animation: "fadeUp 0.6s 0.4s ease both" }}>
-            {[["50K+", "Prompts Available"], ["$2.4M", "Paid to Creators"], ["1M+", "Prompt Uses"], ["120K+", "Shares"]].map(([num, label]) => (
+            {[["50K+", "Prompts Available"], ["1M+", "Prompt Uses"], ["120K+", "Shares"]].map(([num, label]) => (
               <div key={label} style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "clamp(1.8rem, 4vw, 2.4rem)", fontWeight: 800, color: "#0a0a0f", letterSpacing: "-0.03em" }}>{num}</div>
                 <div style={{ fontSize: 13, color: "#9ca3af", fontWeight: 500 }}>{label}</div>
