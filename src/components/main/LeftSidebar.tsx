@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+
 import { cookies } from 'next/headers';
 import { MiniProfile } from './profile/profile';
 import { NavLinks } from './left-sidebar-menu';

@@ -39,10 +39,11 @@ export default function ProfileTabs({
               }`}
           >
             {tab.icon}
+            
             {tab.label}
             <span
               className={`text-xs px-1.5 py-0.5 rounded-full font-semibold
-                ${isActive ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500"}`}
+                ${isActive ? "bg-[#E46549] text-white" : "bg-gray-100 text-gray-500"}`}
             >
               {tab.count}
             </span>

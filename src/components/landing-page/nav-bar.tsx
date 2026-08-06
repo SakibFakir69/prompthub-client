@@ -299,14 +299,14 @@ function Navbar() {
           
             
             <Link href={'/'} className='cursor-pointer'>
-            <Image alt='prompt hub' src={'/ph-logo-2-bg.png'} height={200} width={200}/>
+            <Image alt='prompt hub' src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} height={200} width={200}/>
             </Link>
 
 
 
           {/* Nav Links */}
           <div className="nav-links" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
-            {["Marketplace", "Creators", "Pricing"].map((link) => (
+            {["How It Works", "Creators", "Testimonials"].map((link) => (
               <a key={link} href={`#${link.toLowerCase()}`} style={{ fontSize: 15, fontWeight: 500, color: "#374151", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={e => (e.target as HTMLElement).style.color = "#FF6B35"}
                 onMouseLeave={e => (e.target as HTMLElement).style.color = "#374151"}>{link}</a>
