@@ -8,7 +8,8 @@ import { StarRating } from './components/star-rating'
 function Testionails() {
   return (
     <div>
-         <section style={{ padding: "7rem 5vw", background: "#fff" }}>
+      
+         <section id="testimonials" style={{ padding: "7rem 5vw", background: "#fff" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "4rem" }}>
             <div className="reveal section-label">Testimonials</div>

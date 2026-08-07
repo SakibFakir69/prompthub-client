@@ -10,7 +10,7 @@ import RightSidebar from "@/src/components/main/RightSidebar"
 
 export default function MainRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex ">
+    <div className="min-h-screen bg-gray-50 flex  ">
 
       <FcmInitializer/>
 

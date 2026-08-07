@@ -6,7 +6,8 @@ function HowItWorks() {
   
   return (
     <div>
-         <section style={{ background: "#0a0a0f", padding: "7rem 5vw" }}>
+      
+         <section  id="how-it-works" style={{ background: "#0a0a0f", padding: "7rem 5vw" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "4rem" }}>
             <div className="reveal section-label" style={{ color: "#FF6B35", background: "rgba(255,107,53,0.15)" }}>How It Works</div>

@@ -296,22 +296,31 @@ function Navbar() {
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
           {/* Logo */}
-          
-            
-            <Link href={'/'} className='cursor-pointer'>
-            <Image alt='prompt hub' src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} height={200} width={200}/>
-            </Link>
+
+
+          <Link href={'/'} className='cursor-pointer'>
+            <Image alt='prompt hub' src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} height={200} width={200} />
+          </Link>
 
 
 
           {/* Nav Links */}
           <div className="nav-links" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
-            {["How It Works", "Creators", "Testimonials"].map((link) => (
-              <a key={link} href={`#${link.toLowerCase()}`} style={{ fontSize: 15, fontWeight: 500, color: "#374151", textDecoration: "none", transition: "color 0.2s" }}
+
+            {["How It Works", "Features", "Testimonials"].map((link) => (
+              <Link
+                key={link}
+                href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
+                style={{ fontSize: 15, fontWeight: 500, color: "#374151", textDecoration: "none", transition: "color 0.2s" }}
                 onMouseEnter={e => (e.target as HTMLElement).style.color = "#FF6B35"}
-                onMouseLeave={e => (e.target as HTMLElement).style.color = "#374151"}>{link}</a>
+                onMouseLeave={e => (e.target as HTMLElement).style.color = "#374151"}
+              >
+                {link}
+              </Link>
             ))}
+
           </div>
+
 
           {/* CTA */}
 
@@ -329,10 +338,26 @@ function Navbar() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.08)", padding: "1.5rem 5vw 2rem" }}>
-            {["Marketplace", "Creators", "Pricing", "Blog"].map((link) => (
-              <a key={link} href={`#${link.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)}
-                style={{ display: "block", padding: "0.75rem 0", fontSize: 16, fontWeight: 500, color: "#0a0a0f", textDecoration: "none", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>{link}</a>
+
+            {["How It Works", "Features", "Testimonials"].map((link) => (
+              <Link
+                key={link}
+                href={`#${link.toLowerCase().replace(/\s+/g, "-")}`}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  display: "block",
+                  padding: "0.75rem 0",
+                  fontSize: 16,
+                  fontWeight: 500,
+                  color: "#0a0a0f",
+                  textDecoration: "none",
+                  borderBottom: "1px solid rgba(0,0,0,0.06)"
+                }}
+              >
+                {link}
+              </Link>
             ))}
+
             <Link href={'/login'} prefetch={true} className="btn-primary btn-accent sm:hidden" style={{ marginTop: "1.25rem", display: "inline-flex" }}>Get Started Free →</Link>
           </div>
         )}

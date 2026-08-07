@@ -17,6 +17,7 @@ export default function MobileNav() {
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
       <div className="flex justify-around items-center py-2">
+        
         {TABS.map(({ href, icon: Icon, label }) => {
           const isActive = pathname === href
           return (
