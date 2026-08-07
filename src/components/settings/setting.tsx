@@ -38,6 +38,7 @@ import { baseApi } from "@/src/store/baseApi"
 import { useDispatch } from 'react-redux';
 import { useLogoutUserMutation } from '@/src/store/features/auth/auth.features';
 import { useUnregisterDeviceTokenMutation } from '@/src/store/features/notification/notification.features';
+import { useDeletePromptMutation } from '@/src/store/features/prompt/prompt.features';
 
 
 interface IUser {
@@ -73,6 +74,7 @@ export default function SettingScreen() {
   const { user } = useUser();
   const [logoutUser] = useLogoutUserMutation();
   const [unregisterDeviceToken] = useUnregisterDeviceTokenMutation();
+  const [deleteUser] = useDeletePromptMutation();
 
   const dispatch = useDispatch();
 
@@ -128,15 +130,57 @@ export default function SettingScreen() {
     setPrivacy(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleDeleteAccount = () => {
-    const confirmDelete = window.confirm(
-      'Delete account\n\nThis action is permanent and cannot be undone. All your prompts and data will be removed.'
-    );
-    if (confirmDelete) {
-      // call your delete account API here
-      console.log("Account deletion confirmed");
-    }
-  };
+const handleDeleteAccount = () => {
+  toast(
+    ({ closeToast }) => (
+      <div>
+        <p style={{ marginBottom: 8, fontWeight: 600 }}>Delete account?</p>
+        <p style={{ marginBottom: 12, fontSize: 13, color: "#6b7280" }}>
+          This action is permanent and cannot be undone. All your prompts and data will be removed.
+        </p>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={async () => {
+              closeToast();
+              try {
+                await deleteUser(userId).unwrap(); // pass the real user id here
+                toast.success("Account deleted successfully");
+              } catch (error) {
+                console.error("Failed to delete account:", error);
+                toast.error("Failed to delete account. Please try again.");
+              }
+            }}
+            style={{
+              background: "#dc2626",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              padding: "6px 14px",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            Delete
+          </button>
+          <button
+            onClick={closeToast}
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(0,0,0,0.15)",
+              borderRadius: 6,
+              padding: "6px 14px",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ),
+    { autoClose: false, closeOnClick: false, closeButton: true }
+  );
+};
 
   
 
