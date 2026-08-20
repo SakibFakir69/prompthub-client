@@ -39,6 +39,7 @@ import { useDispatch } from 'react-redux';
 import { useLogoutUserMutation } from '@/src/store/features/auth/auth.features';
 import { useUnregisterDeviceTokenMutation } from '@/src/store/features/notification/notification.features';
 import { useDeletePromptMutation } from '@/src/store/features/prompt/prompt.features';
+import { useDeleteUserMutation } from '@/src/store/features/users/user.features';
 
 
 interface IUser {
@@ -74,7 +75,7 @@ export default function SettingScreen() {
   const { user } = useUser();
   const [logoutUser] = useLogoutUserMutation();
   const [unregisterDeviceToken] = useUnregisterDeviceTokenMutation();
-  const [deleteUser] = useDeletePromptMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
   const dispatch = useDispatch();
 
@@ -143,7 +144,7 @@ export default function SettingScreen() {
               onClick={async () => {
                 closeToast();
                 try {
-                  await deleteUser(userId).unwrap(); // pass the real user id here
+                  await deleteUser().unwrap()
                   toast.success("Account deleted successfully");
                 } catch (error) {
                   console.error("Failed to delete account:", error);
