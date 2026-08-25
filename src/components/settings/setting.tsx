@@ -79,6 +79,7 @@ export default function SettingScreen() {
 
   const dispatch = useDispatch();
 
+
   const [notifications, setNotifications] = useState<NotificationState>({
     push: true,
     email: false,
@@ -211,6 +212,12 @@ export default function SettingScreen() {
     </button>
   );
 
+
+  const goVerifiedPath = () => {
+    router.push('/verified')
+
+  }
+
   return (
     <div className="min-h-screen flex justify-center">
       {/* Container to restrict max width on desktop view (retains mobile app layout style) */}
@@ -275,6 +282,10 @@ export default function SettingScreen() {
             <Divider />
             {!user?.data.isVerify && (
               <RowItem
+
+
+                onPress={goVerifiedPath}
+
                 icon={<BadgeCheck size={17} color="#534AB7" />}
                 iconBg="#EEEDFE"
                 label="Request verified badge"
