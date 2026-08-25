@@ -218,7 +218,7 @@ export default function SettingScreen() {
   return (
     <div className="min-h-screen flex justify-center">
       {/* Container to restrict max width on desktop view (retains mobile app layout style) */}
-      <div className="w-full  bg-gray-50 flex flex-col min-h-screen border-x border-gray-100 ">
+      <div className="w-full  bg-gray-50 flex flex-col min-h-screen border-x border-gray-100 cursor-pointer ">
 
         {/* Header */}
         <header className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100 sticky top-0 z-10">
@@ -360,6 +360,7 @@ export default function SettingScreen() {
               icon={<HelpCircle size={17} color="#185FA5" />}
               iconBg="#E6F1FB"
               label="Help & FAQ"
+            onPress={handleFeedbackClick}
             />
 
 
