@@ -30,17 +30,14 @@ import { SettingGroup } from './setting-group';
 import { RowItem } from './setting-row-items';
 import { Divider } from './setting-divider';
 import { SectionLabel } from './setting-section-label';
-
-
 import { toast } from "react-toastify"
-
 import { baseApi } from "@/src/store/baseApi"
 import { useDispatch } from 'react-redux';
 import { useLogoutUserMutation } from '@/src/store/features/auth/auth.features';
 import { useUnregisterDeviceTokenMutation } from '@/src/store/features/notification/notification.features';
 import { useDeletePromptMutation } from '@/src/store/features/prompt/prompt.features';
 import { useDeleteUserMutation } from '@/src/store/features/users/user.features';
-
+import { handleFeedbackClick } from '@/src/helper/settings/helper.setting'
 
 interface IUser {
   name: string;
@@ -351,60 +348,10 @@ export default function SettingScreen() {
             />
           </SettingGroup> */}
 
-          {/* ── Privacy ── */}
-          <SectionLabel label="Privacy" />
-          <SettingGroup>
-            <RowItem
-              icon={<ShieldCheck size={17} color="#0F6E56" />}
-              iconBg="#E1F5EE"
-              label="Private account"
-              sublabel="Only followers can see your prompts"
-              right={
-                <ToggleSwitch
-                  value={privacy.privateAccount}
-                  onToggle={() => togglePrivacy('privateAccount')}
-                />
-              }
-            />
-            <Divider />
-            <RowItem
-              icon={<Clock size={17} color="#0F6E56" />}
-              iconBg="#E1F5EE"
-              label="Activity status"
-              sublabel="Show when you're active"
-              right={
-                <ToggleSwitch
-                  value={privacy.activityStatus}
-                  onToggle={() => togglePrivacy('activityStatus')}
-                />
-              }
-            />
-            <Divider />
-            <RowItem
-              icon={<Ban size={17} color="#0F6E56" />}
-              iconBg="#E1F5EE"
-              label="Blocked users"
-            />
-          </SettingGroup>
 
 
-          {/* ── Appearance ── */}
-          <SectionLabel label="Appearance" />
-          <SettingGroup>
-            <RowItem
-              icon={<Sun size={17} color="#444441" />}
-              iconBg="#F1EFE8"
-              label="Theme"
-              sublabel="System default"
-            />
-            <Divider />
-            <RowItem
-              icon={<Languages size={17} color="#444441" />}
-              iconBg="#F1EFE8"
-              label="Language"
-              sublabel="English"
-            />
-          </SettingGroup>
+
+
 
           {/* ── Support ── */}
           <SectionLabel label="Support" />
@@ -414,12 +361,18 @@ export default function SettingScreen() {
               iconBg="#E6F1FB"
               label="Help & FAQ"
             />
+
+
             <Divider />
+
             <RowItem
               icon={<MessageSquare size={17} color="#185FA5" />}
               iconBg="#E6F1FB"
               label="Send feedback"
+              onPress={handleFeedbackClick}
+           
             />
+          
             <Divider />
             <RowItem
               icon={<Info size={17} color="#185FA5" />}
