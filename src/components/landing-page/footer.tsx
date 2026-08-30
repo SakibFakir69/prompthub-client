@@ -12,7 +12,7 @@ function Footer() {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1rem" }}>
                 
-                 <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} alt={'PromptHub'} height={200} width={200}/>
+                 <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1788117268/icon-512_xjqgig.png'} alt={'PromptHub'} height={100} width={100}/>
               </div>
               <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 14, lineHeight: 1.7, maxWidth: 260, fontWeight: 300 }}>The world's leading marketplace for AI prompts. Buy, sell, and discover prompts that actually work.</p>
               <div style={{ display: "flex", gap: 10, marginTop: "1.5rem" }}>

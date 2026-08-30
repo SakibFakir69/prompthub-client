@@ -299,7 +299,7 @@ function Navbar() {
 
 
           <Link href={'/'} className='cursor-pointer'>
-            <Image alt='prompt hub' src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1785515194/ph-logo-2-bg_pvppq9.png'} height={200} width={200} />
+            <Image alt='prompt hub' src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1788117186/prompthub_modern_logo_h4s84j.png'} height={200} width={200} />
           </Link>
 
 
