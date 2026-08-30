@@ -7,6 +7,8 @@ import { useLoginUserMutation } from "@/src/store/features/auth/auth.features";
 import CatchErrorHandel from "@/src/helper/error/error.helper";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import PromptHubLoader from "../loader/Prompthubloader";
+
 
 
 
@@ -68,7 +70,7 @@ function LoginComponent() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-orange-50/30">
 
-      
+
 
       <AuthBackground />
 
@@ -78,9 +80,9 @@ function LoginComponent() {
         <div className="text-center">
 
           <div className="flex justify-center">
-            <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1788117186/prompthub_modern_logo_h4s84j.png'} alt={'PromptHub'} height={200} width={200}/>
+            <Image src={'https://res.cloudinary.com/dgft45qqq/image/upload/v1788117186/prompthub_modern_logo_h4s84j.png'} alt={'PromptHub'} height={200} width={200} />
           </div>
-         
+
           <h2 className="text-3xl font-extrabold text-gray-900">
             Welcome back
           </h2>
@@ -169,13 +171,23 @@ function LoginComponent() {
           </div>
 
           {/* Submit */}
+
+
           <button
-            disabled={isSubmitting}
-            type="submit"
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-[#FF6B35] hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B35] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? "Signing in…" : "Sign In"}
-          </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-[#FF6B35] hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B35] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+>
+  {isSubmitting ? (
+    <>
+      <PromptHubLoader size={18} label="Signing in"  />
+      Signing in…
+    </>
+  ) : (
+    "Sign in"
+  )}
+</button>
+
         </form>
 
         {/* Footer link */}

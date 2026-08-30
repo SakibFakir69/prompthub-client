@@ -11,6 +11,7 @@ import { useRegisterUserMutation } from "@/src/store/features/users/user.feature
 import { useSendOtpMutation } from "@/src/store/features/otp/otp.features";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import PromptHubLoader from "../loader/Prompthubloader";
 
 type registerType = z.infer<typeof registerUserSchemaValidation>
 
@@ -222,15 +223,21 @@ function RegisterComponent() {
           </div>
 
           {/* Submit Button */}
-          <div>
-            <button
-              disabled={isSubmitting}
-              type="submit"
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-[#FF6B35] hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B35] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Creating Account..." : "Register Account"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-[#FF6B35] hover:bg-[#e55a2b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B35] transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <>
+                <PromptHubLoader size={18} label="Signing up" />
+                Signing up…
+              </>
+            ) : (
+              "Sign up"
+            )}
+          </button>
+
         </form>
 
         {/* Footer link */}
