@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -12,9 +12,8 @@ import {
 import { toast } from 'react-toastify'
 import { MAX_CATEGORIES, MAX_IMAGE_MB, PRESET_CATEGORIES, MAX_TAGS } from '@/src/constants/create-prompt/constant.create-prompt'
 
-
-
-
+const MAX_TAG_LENGTH = 24
+const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Max 100 chars'),
@@ -23,6 +22,9 @@ const schema = z.object({
   tags: z.array(z.string()).max(MAX_TAGS, `Max ${MAX_TAGS} tags`),
   visibility: z.boolean(),
 })
+
+// test all features + fix problem + launch on product launch(peermid,banglalaunch,producthuny) 
+
 
 type FormValues = z.infer<typeof schema>
 
@@ -43,8 +45,11 @@ export default function CreatePromptBox() {
   const [categoryInput, setCategoryInput] = useState('')
   const [showCategoryInput, setShowCategoryInput] = useState(false)
   const categoryInputRef = useRef<HTMLInputElement>(null)
+  const categoryInputValueRef = useRef('') // avoids stale-closure double-commit on Escape+blur
 
   const fileRef = useRef<HTMLInputElement>(null)
+  const titleInputRef = useRef<HTMLInputElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
 
   const [createPrompt, { isLoading }] = useCreatePromptMutation()
   const [uploadImage, { isLoading: uploading }] = useUploadPromptImageMutation()
@@ -56,8 +61,9 @@ export default function CreatePromptBox() {
     control,
     watch,
     setValue,
+    getValues,
     reset: resetForm,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -77,8 +83,16 @@ export default function CreatePromptBox() {
 
   const allCategories = [...PRESET_CATEGORIES, ...customCategories]
 
+  const hasUnsavedContent = () => {
+    const v = getValues()
+    return Boolean(
+      v.title.trim() || v.prompt.trim() || v.categories.length || v.tags.length || imageFile,
+    )
+  }
+
   const hardReset = () => {
     resetForm()
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImageFile(null)
     setImagePreview(null)
     setImageError(null)
@@ -90,7 +104,40 @@ export default function CreatePromptBox() {
     if (fileRef.current) fileRef.current.value = ''
   }
 
-  const close = () => { hardReset(); setOpen(false) }
+  // Guarded close: confirm if there's unsaved content, block while a request is in flight
+  const requestClose = useCallback(() => {
+    if (isBusy) return
+    if (hasUnsavedContent() && !window.confirm('Discard this prompt? Your changes will be lost.')) {
+      return
+    }
+    hardReset()
+    setOpen(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBusy, imageFile, imagePreview])
+
+  // Body scroll lock while modal is open
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [open])
+
+  // Escape to close (respects unsaved-content guard), focus title on open
+  useEffect(() => {
+    if (!open) return
+    titleInputRef.current?.focus()
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') requestClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [open, requestClose])
+
+  // Revoke the preview object URL whenever it changes or the component unmounts
+  useEffect(() => {
+    return () => { if (imagePreview) URL.revokeObjectURL(imagePreview) }
+  }, [imagePreview])
 
   // ── Category handlers ────────────────────────────────────────────────────────
 
@@ -102,27 +149,24 @@ export default function CreatePromptBox() {
     }
   }
 
-  const commitCustomCategory = (current: string[], onChange: (v: string[]) => void) => {
-    const val = categoryInput.trim()
-    if (!val) { setCategoryInput(''); setShowCategoryInput(false); return }
+  const commitCustomCategory = (raw: string, current: string[], onChange: (v: string[]) => void) => {
+    const val = raw.trim()
+    setCategoryInput('')
+    setShowCategoryInput(false)
+    categoryInputValueRef.current = ''
+    if (!val) return
 
     const normalized = val.charAt(0).toUpperCase() + val.slice(1)
 
-    // Ignore if already exists (preset or custom)
     if (allCategories.map((c) => c.toLowerCase()).includes(normalized.toLowerCase())) {
-      // Still select it if not already selected
       if (!current.map((c) => c.toLowerCase()).includes(normalized.toLowerCase())) {
         if (current.length < MAX_CATEGORIES) onChange([...current, normalized])
       }
-      setCategoryInput('')
-      setShowCategoryInput(false)
       return
     }
 
     setCustomCategories((prev) => [...prev, normalized])
     if (current.length < MAX_CATEGORIES) onChange([...current, normalized])
-    setCategoryInput('')
-    setShowCategoryInput(false)
   }
 
   const removeCustomCategory = (
@@ -143,8 +187,9 @@ export default function CreatePromptBox() {
   ) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault()
-      const val = tagInput.trim().replace(/^#/, '')
-      if (!val || current.includes(val) || current.length >= MAX_TAGS) {
+      const val = tagInput.trim().replace(/^#/, '').slice(0, MAX_TAG_LENGTH)
+      const exists = current.some((t) => t.toLowerCase() === val.toLowerCase())
+      if (!val || exists || current.length >= MAX_TAGS) {
         setTagInput('')
         return
       }
@@ -161,47 +206,74 @@ export default function CreatePromptBox() {
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
-      setImageError(`Image must be under ${MAX_IMAGE_MB} MB`)
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setImageError('Only PNG, JPG or WEBP images are supported')
+      if (fileRef.current) fileRef.current.value = ''
       return
     }
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+      setImageError(`Image must be under ${MAX_IMAGE_MB} MB`)
+      if (fileRef.current) fileRef.current.value = ''
+      return
+    }
+
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
     setImageError(null)
   }
 
+  const removeImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    setImageFile(null)
+    setImagePreview(null)
+    if (fileRef.current) fileRef.current.value = ''
+  }
 
   const onSubmit = async (data: FormValues) => {
     setApiError(null)
+
+    // If the user typed a custom category but never pressed Enter/blurred, commit it now
+    // instead of silently dropping it.
+    let categories = data.categories
+    const pending = categoryInputValueRef.current.trim()
+    if (pending) {
+      const normalized = pending.charAt(0).toUpperCase() + pending.slice(1)
+      if (!categories.some((c) => c.toLowerCase() === normalized.toLowerCase()) && categories.length < MAX_CATEGORIES) {
+        categories = [...categories, normalized]
+      }
+    }
+    if (categories.length === 0) {
+      setApiError('Select at least one category')
+      return
+    }
+
     try {
       let image = ''
       let imagePublicId = ''
-
 
       if (imageFile) {
         const form = new FormData()
         form.append('image', imageFile)
         const res = await uploadImage(form).unwrap()
-
-        image = res?.image;
-        imagePublicId = res?.imagePublicId;
-
-        console.log('UPLOAD RESPONSE:', res)
+        image = res?.image
+        imagePublicId = res?.imagePublicId
       }
 
       await createPrompt({
         title: data.title.trim(),
         prompt: data.prompt.trim(),
-        category: data.categories,
+        category: categories,
         tags: data.tags,
         visibility: data.visibility,
         image,
         imagePublicId,
       }).unwrap()
 
-      close()
       toast.success('Prompt published successfully!')
-
+      hardReset()
+      setOpen(false)
     } catch (err: any) {
       const message = err?.data?.message ?? 'Something went wrong. Try again.'
       setApiError(message)
@@ -228,13 +300,17 @@ export default function CreatePromptBox() {
 
       {/* Backdrop */}
       {open && (
-        <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={close} />
+        <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={requestClose} />
       )}
 
       {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
           <div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-prompt-title"
             className="relative pointer-events-auto w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
@@ -263,12 +339,14 @@ export default function CreatePromptBox() {
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
               <div>
-                <h2 className="text-sm font-semibold text-gray-900">Share a prompt</h2>
+                <h2 id="create-prompt-title" className="text-sm font-semibold text-gray-900">Share a prompt</h2>
                 <p className="text-xs text-gray-400 mt-0.5">Share prompts that actually work</p>
               </div>
               <button
-                onClick={close}
-                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100"
+                onClick={requestClose}
+                disabled={isBusy}
+                aria-label="Close"
+                className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -282,20 +360,26 @@ export default function CreatePromptBox() {
             >
               {/* API error */}
               {apiError && (
-                <div className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                <div role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
                   {apiError}
                 </div>
               )}
 
               {/* Title */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-gray-500">
+                <label htmlFor="prompt-title" className="text-xs font-medium text-gray-500">
                   Title <span className="text-red-400">*</span>
                 </label>
                 <input
+                  id="prompt-title"
                   {...register('title')}
+                  ref={(el) => {
+                    register('title').ref(el)
+                    titleInputRef.current = el
+                  }}
                   maxLength={100}
                   placeholder="e.g. Rewrite for clarity"
+                  aria-invalid={!!errors.title}
                   className={`w-full text-sm px-3 py-2.5 rounded-xl border bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white transition-all ${errors.title ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
                     }`}
                 />
@@ -310,14 +394,16 @@ export default function CreatePromptBox() {
 
               {/* Prompt */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-gray-500">
+                <label htmlFor="prompt-body" className="text-xs font-medium text-gray-500">
                   Prompt <span className="text-red-400">*</span>
                 </label>
                 <textarea
+                  id="prompt-body"
                   {...register('prompt')}
                   maxLength={5000}
                   rows={6}
                   placeholder="Paste or write your prompt here. Be specific — the more detail, the more useful it is for others."
+                  aria-invalid={!!errors.prompt}
                   className={`w-full text-sm px-3 py-2.5 rounded-xl border bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:bg-white transition-all resize-none leading-relaxed ${errors.prompt ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-[#FF6B35]'
                     }`}
                 />
@@ -350,6 +436,7 @@ export default function CreatePromptBox() {
                           key={cat}
                           type="button"
                           onClick={() => toggleCategory(cat, field.value, field.onChange)}
+                          disabled={!field.value.includes(cat) && field.value.length >= MAX_CATEGORIES}
                           className={`text-xs px-3 py-1.5 rounded-full border transition-all ${field.value.includes(cat)
                             ? 'bg-[#FF6B35]/10 border-[#FF6B35] text-[#FF6B35] font-medium'
                             : field.value.length >= MAX_CATEGORIES
@@ -380,6 +467,7 @@ export default function CreatePromptBox() {
                           <button
                             type="button"
                             onClick={() => removeCustomCategory(cat, field.value, field.onChange)}
+                            aria-label={`Remove ${cat}`}
                             className="text-gray-400 hover:text-red-400 transition-colors ml-0.5"
                           >
                             <X className="w-3 h-3" />
@@ -394,18 +482,23 @@ export default function CreatePromptBox() {
                             ref={categoryInputRef}
                             type="text"
                             value={categoryInput}
-                            onChange={(e) => setCategoryInput(e.target.value)}
+                            onChange={(e) => {
+                              setCategoryInput(e.target.value)
+                              categoryInputValueRef.current = e.target.value
+                            }}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault()
-                                commitCustomCategory(field.value, field.onChange)
+                                commitCustomCategory(categoryInput, field.value, field.onChange)
                               }
                               if (e.key === 'Escape') {
+                                e.stopPropagation() // don't also close the modal
                                 setCategoryInput('')
+                                categoryInputValueRef.current = ''
                                 setShowCategoryInput(false)
                               }
                             }}
-                            onBlur={() => commitCustomCategory(field.value, field.onChange)}
+                            onBlur={() => commitCustomCategory(categoryInput, field.value, field.onChange)}
                             placeholder="Category name"
                             maxLength={20}
                             autoFocus
@@ -416,7 +509,7 @@ export default function CreatePromptBox() {
                             onMouseDown={(e) => {
                               // prevent blur from firing before click
                               e.preventDefault()
-                              commitCustomCategory(field.value, field.onChange)
+                              commitCustomCategory(categoryInput, field.value, field.onChange)
                             }}
                             className="text-[#FF6B35]"
                           >
@@ -430,8 +523,9 @@ export default function CreatePromptBox() {
                             setShowCategoryInput(true)
                             setTimeout(() => categoryInputRef.current?.focus(), 0)
                           }}
+                          disabled={field.value.length >= MAX_CATEGORIES}
                           title="Add custom category"
-                          className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-dashed border-gray-300 text-gray-400 hover:border-[#FF6B35] hover:text-[#FF6B35] bg-white transition-all"
+                          className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border border-dashed border-gray-300 text-gray-400 hover:border-[#FF6B35] hover:text-[#FF6B35] bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-gray-400"
                         >
                           <Plus className="w-3 h-3" /> Custom
                         </button>
@@ -465,6 +559,7 @@ export default function CreatePromptBox() {
                           <button
                             type="button"
                             onClick={() => field.onChange(field.value.filter((t) => t !== tag))}
+                            aria-label={`Remove tag ${tag}`}
                             className="text-gray-400 hover:text-red-400 transition-colors"
                           >
                             <X className="w-3 h-3" />
@@ -478,6 +573,7 @@ export default function CreatePromptBox() {
                           value={tagInput}
                           onChange={(e) => setTagInput(e.target.value)}
                           onKeyDown={(e) => handleTagKeyDown(e, field.value, field.onChange)}
+                          maxLength={MAX_TAG_LENGTH}
                           placeholder={field.value.length === 0 ? 'Type and press Enter…' : ''}
                           className="text-sm bg-transparent outline-none text-gray-900 placeholder:text-gray-400 min-w-[120px] flex-1"
                         />
@@ -499,7 +595,7 @@ export default function CreatePromptBox() {
                   >
                     <ImagePlus className="w-5 h-5 text-gray-400" />
                     <span className="text-xs text-gray-400">
-                      Click to upload · PNG, JPG · max {MAX_IMAGE_MB} MB
+                      Click to upload · PNG, JPG, WEBP · max {MAX_IMAGE_MB} MB
                     </span>
                   </button>
                 ) : (
@@ -507,11 +603,8 @@ export default function CreatePromptBox() {
                     <img src={imagePreview} alt="Cover" className="w-full h-full object-cover" />
                     <button
                       type="button"
-                      onClick={() => {
-                        setImageFile(null)
-                        setImagePreview(null)
-                        if (fileRef.current) fileRef.current.value = ''
-                      }}
+                      onClick={removeImage}
+                      aria-label="Remove image"
                       className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -521,12 +614,12 @@ export default function CreatePromptBox() {
                 <input
                   ref={fileRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/png,image/jpeg,image/webp"
                   className="hidden"
                   onChange={handleImage}
                 />
                 {imageError && (
-                  <span className="text-xs text-red-500">{imageError}</span>
+                  <span role="alert" className="text-xs text-red-500">{imageError}</span>
                 )}
               </div>
 
@@ -561,15 +654,16 @@ export default function CreatePromptBox() {
             </form>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-5 py-3 mb-3 border-t border-gray-100 shrink-0 ">
-              <p className="text-xs text-gray-400">
+            <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-gray-100 shrink-0">
+              <p className="text-xs text-gray-400 hidden sm:block">
                 <span className="text-red-400">*</span> Required fields
               </p>
-              <div className="flex gap-2 sm:-mt-10">
+              <div className="flex gap-2 ml-auto">
                 <button
                   type="button"
-                  onClick={close}
-                  className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                  onClick={requestClose}
+                  disabled={isBusy}
+                  className="text-sm px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
