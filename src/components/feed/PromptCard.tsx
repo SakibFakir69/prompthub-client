@@ -58,7 +58,7 @@ export function PromptCard({ prompt: p, promptId }: PromptCardProps) {
     e.preventDefault()
     e.stopPropagation()
     try {
-      const res = await savePrompt({ promptId: p._id }).unwrap();
+      const res = await savePrompt({ prompt: p._id }).unwrap();
       setSaved(prev => !prev)
       if (res.success) toast.success(res.message)
     } catch (error: any) {

@@ -65,7 +65,7 @@ export interface VotePayload {
 }
 
 export interface SavePromptPayload {
-  promptId: string
+  prompt: string
   
 }
 
